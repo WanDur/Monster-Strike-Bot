@@ -1,6 +1,16 @@
-import pyautogui
-import time
 from bot import Bot
+from time import sleep
+
+
+def get_screen_data():
+    global datas
+
+    try:
+        file = open("data", "r")
+        datas = file.read().split(' ')
+    except:
+        print("data file not found\nPlease run WindowSizeChecker.exe")
+        exit(1)
 
 
 def main():
@@ -10,12 +20,6 @@ def main():
     main.counter += 1
     InBattle: bool
     InResultPage: bool
-    try:
-        file = open("data", "r")
-        datas = file.read().split(' ')
-    except:
-        print("data file not found\nPlease run WindowSizeChecker.exe")
-        exit(1)
 
     dx = int(datas[0])
     dy = int(datas[1]) + 20
@@ -24,7 +28,7 @@ def main():
 
     ms_bot = Bot(dx, dy, height, width)
 
-    def menu_control():
+    def full_menu_control():
         ms_bot.clicker('mainmenu')
         ms_bot.clicker('threesubmenu')
         ms_bot.clicker('trainingmenu')
@@ -33,15 +37,23 @@ def main():
         ms_bot.clicker('singleplayer')
         ms_bot.clicker('selectmonster')
         ms_bot.clicker('startbattle')
-    menu_control()
+
+    def skipped_menu_control():
+        ms_bot.longPress('mainmenu')
+        ms_bot.clicker('selectsmalltrain')
+        ms_bot.clicker('singleplayer')
+        ms_bot.clicker('selectmonster')
+        ms_bot.clicker('startbattle')
+
+    skipped_menu_control() if main.counter >= 2 else full_menu_control()
 
     print("Battle started   打緊. . .")
 
     InBattle = True
     while InBattle == True:
         ms_bot.shoot()
-        _pos = pyautogui.locateOnScreen(r"img\ok_452x782.png", confidence=0.8)
-        if _pos is not None:
+        _found = ms_bot.found_image('ok')
+        if _found:
             InBattle = False
             InResultPage = True
 
@@ -50,19 +62,20 @@ def main():
     while InResultPage == True:
         ms_bot.clicker('startBtn')
         ms_bot.clicker('menuspamclick')
-        time.sleep(1)
-        _pos = pyautogui.locateOnScreen(
-            r"img\level_452x782.png", confidence=0.8)
-        if _pos is not None:
+        sleep(1)
+        _found = ms_bot.found_image('level')
+        if _found is not None:
             InResultPage = False
             print(
-                f"\n\nFinished {main.counter}   打左{main.counter}舖\nreturned to menu, restart after 5 secs\n")
+                f"\n\nFinished {main.counter}   打左{main.counter}舖\nreturned to menu, restart after 5 seconds\n")
             ms_bot.clicker('bottommainmenu')
-            time.sleep(5)
+            sleep(5)
             main()
 
 
 main.counter = 0
-print("start in 5 secs")
-time.sleep(5)
+get_screen_data()
+print("start in 5 seconds, make sure the game is on the screen!")
+sleep(5)
+
 main()

@@ -1,6 +1,6 @@
 import random
-import pyautogui
-import time
+from pyautogui import moveTo, dragTo, click, mouseDown, mouseUp, locateOnScreen
+from time import sleep
 import pywinauto
 
 
@@ -13,7 +13,7 @@ class Bot:
         :param height: height of the game screen
         :param width: width of the game screen
         '''
-        # initilize
+        # initialize
         self.dx = dx
         self.dy = dy
         self.height = height
@@ -55,11 +55,11 @@ class Bot:
         initPos = _randomPos[0]
         finalPos = _randomPos[1]
 
-        pyautogui.moveTo(initPos)
-        time.sleep(.5)
-        pyautogui.dragTo(finalPos, duration=0.5)
+        moveTo(initPos)
+        sleep(.5)
+        dragTo(finalPos, duration=0.5)
 
-        time.sleep(2)
+        sleep(2)
 
     def clicker(self, option: str):
         '''
@@ -70,53 +70,78 @@ class Bot:
 
         match option:
             case 'mainmenu':
-                pyautogui.moveTo(pos_cal(self.half, self.mainmenuY))
-                pyautogui.click()
-                time.sleep(1)
+                moveTo(pos_cal(self.half, self.mainmenuY))
+                click()
+                sleep(1)
             case 'threesubmenu':
-                pyautogui.moveTo(
+                moveTo(
                     pos_cal(self.threesubmenuX, self.threesubmenuY))
-                pyautogui.click()
-                time.sleep(.6)
+                click()
+                sleep(.6)
             case 'trainingmenu':
-                pyautogui.moveTo(pos_cal(self.half, self.trainingMenuY))
-                pyautogui.click()
-                time.sleep(2)
+                moveTo(pos_cal(self.half, self.trainingMenuY))
+                click()
+                sleep(2)
             case 'selectbigtrain':
-                pyautogui.moveTo(pos_cal(self.half, self.selectBigtrainY))
-                pyautogui.click()
-                time.sleep(.5)
+                moveTo(pos_cal(self.half, self.selectBigtrainY))
+                click()
+                sleep(.5)
             case 'selectsmalltrain':
-                pyautogui.moveTo(pos_cal(self.half, self.selectSmalltrainY))
-                pyautogui.click()
-                time.sleep(1)
+                moveTo(pos_cal(self.half, self.selectSmalltrainY))
+                click()
+                sleep(1)
             case 'singleplayer':
-                pyautogui.moveTo(pos_cal(self.singleplayerX, self.half))
-                pyautogui.click()
-                time.sleep(5)
+                moveTo(pos_cal(self.singleplayerX, self.half))
+                click()
+                sleep(5)
             case 'selectmonster':
-                pyautogui.moveTo(pos_cal(self.half, self.selectMonsterY))
-                pyautogui.click()
-                time.sleep(1)
+                moveTo(pos_cal(self.half, self.selectMonsterY))
+                click()
+                sleep(1)
             case 'startbattle':
-                pyautogui.moveTo(pos_cal(self.half, self.startBattleY))
-                pyautogui.click()
-                time.sleep(1)
+                moveTo(pos_cal(self.half, self.startBattleY))
+                click()
+                sleep(1)
             case 'startBtn':
-                pyautogui.moveTo(pos_cal(self.half, self.okButtonY))
+                moveTo(pos_cal(self.half, self.okButtonY))
                 _x = self.dx + self.width * self.half
                 _y = self.dy + self.height * self.okButtonY
                 pywinauto.mouse.press(button='left', coords=(int(_x), int(_y)))
                 pywinauto.mouse.release(
                     button='left', coords=(int(_x), int(_y)))
             case 'menuspamclick':
-                pyautogui.moveTo(pos_cal(self.half, self.okButton2Y))
+                moveTo(pos_cal(self.half, self.okButton2Y))
                 _x = self.dx + self.width * self.half
                 _y = self.dy + self.height * self.okButton2Y
                 pywinauto.mouse.press(button='left', coords=(int(_x), int(_y)))
                 pywinauto.mouse.release(
                     button='left', coords=(int(_x), int(_y)))
             case 'bottommainmenu':
-                pyautogui.moveTo(
-                    pos_cal(self.bottommainmenuX, self.bottommainmenuY))
-                pyautogui.click()
+                moveTo(pos_cal(self.bottommainmenuX, self.bottommainmenuY))
+                click()
+
+    def longPress(self, option: str):
+        '''
+        perform press action on the game screen
+        '''
+
+        def pos_cal(x: float, y: float):
+            return (self.dx + self.width * x, self.dy + self.height * y)
+
+        match option:
+            case 'mainmenu':
+                mouseDown(pos_cal(self.half, self.mainmenuY))
+                sleep(3)
+                mouseUp()
+
+    def found_image(self, image: str) -> bool:
+        '''
+        return True if image is found
+        :param image: image name, 'level' or 'ok'
+        '''
+        _img1 = locateOnScreen(f"img\{image}_326x566.png", confidence=0.8)
+        _img2 = locateOnScreen(f"img\{image}_452x782.png", confidence=0.8)
+        _img3 = locateOnScreen(f"img\{image}_550x948.png", confidence=0.8)
+
+        if((_img1 is not None) or (_img2 is not None) or (_img3 is not None)):
+            return True
