@@ -1,2 +1,4 @@
 pyautogui
 pywinauto
+Pillow
+opencv-python
