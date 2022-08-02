@@ -42,24 +42,23 @@ class Bot:
         self.topLeft = (self.dx + width * 0.1666, self.dy + height * 0.1456)
         self.topRight = (self.dx + width * 0.8333, self.dy + height * 0.2)
 
-        self.posList = [self.middle, self.bottomLeft,
-                        self.bottomRight, self.topLeft, self.topRight]
+        self.posList = [self.middle, self.bottomLeft, self.bottomRight, self.topLeft, self.topRight]
 
     def shoot(self):
         '''
         shoot randomly
 
-        every shoot last for 3 seconds
+        every shoot last for 2.2 seconds
         '''
         _randomPos = random.sample(self.posList, k=2)
         initPos = _randomPos[0]
         finalPos = _randomPos[1]
 
         moveTo(initPos)
-        sleep(.5)
-        dragTo(finalPos, duration=0.5)
+        sleep(.2)
+        dragTo(finalPos, duration=0.15)
 
-        sleep(2)
+        sleep(1.85)
 
     def clicker(self, option: str):
         '''
@@ -74,8 +73,7 @@ class Bot:
                 click()
                 sleep(1)
             case 'threesubmenu':
-                moveTo(
-                    pos_cal(self.threesubmenuX, self.threesubmenuY))
+                moveTo(pos_cal(self.threesubmenuX, self.threesubmenuY))
                 click()
                 sleep(.6)
             case 'trainingmenu':
@@ -107,15 +105,13 @@ class Bot:
                 _x = self.dx + self.width * self.half
                 _y = self.dy + self.height * self.okButtonY
                 pywinauto.mouse.press(button='left', coords=(int(_x), int(_y)))
-                pywinauto.mouse.release(
-                    button='left', coords=(int(_x), int(_y)))
+                pywinauto.mouse.release(button='left', coords=(int(_x), int(_y)))
             case 'menuspamclick':
                 moveTo(pos_cal(self.half, self.okButton2Y))
                 _x = self.dx + self.width * self.half
                 _y = self.dy + self.height * self.okButton2Y
                 pywinauto.mouse.press(button='left', coords=(int(_x), int(_y)))
-                pywinauto.mouse.release(
-                    button='left', coords=(int(_x), int(_y)))
+                pywinauto.mouse.release(button='left', coords=(int(_x), int(_y)))
             case 'bottommainmenu':
                 moveTo(pos_cal(self.bottommainmenuX, self.bottommainmenuY))
                 click()

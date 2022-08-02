@@ -1,5 +1,6 @@
 from bot import Bot
 from time import sleep
+from os import system
 
 
 def get_screen_data():
@@ -66,8 +67,8 @@ def main():
         _found = ms_bot.found_image('level')
         if _found is not None:
             InResultPage = False
-            print(
-                f"\n\nFinished {main.counter}   打左{main.counter}舖\nreturned to menu, restart after 5 seconds\n")
+            system('cls')
+            print(f"Finished {main.counter}   打左{main.counter}舖\nreturned to menu, restart after 5 seconds\n")
             ms_bot.clicker('bottommainmenu')
             sleep(5)
             main()
@@ -75,6 +76,7 @@ def main():
 
 main.counter = 0
 get_screen_data()
+print("Bot ----- v1.2")
 print("start in 5 seconds, make sure the game is on the screen!")
 sleep(5)
 
