@@ -33,6 +33,8 @@ Make sure all files are under the same folder.
 如果要結束program就按 ctrl + c
 
 ## Versions
+- 1.2
+  -  shoot faster
 - 1.1
   - 增加長按返回上一次冒險的功能
   - Added support to two more resolutions
