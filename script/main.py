@@ -1,34 +1,16 @@
 from bot import Bot
-from time import sleep
+from time import sleep, time
 from os import system
 
-
-def get_screen_data():
-    global datas
-
-    try:
-        file = open("data", "r")
-        datas = file.read().split(' ')
-    except:
-        print("data file not found\nPlease run WindowSizeChecker.exe")
-        exit(1)
-
+VERSION = '1.3'
 
 def main():
     '''
     main loop of the bot
     '''
     main.counter += 1
-    InBattle: bool
-    InResultPage: bool
-
-    dx = int(datas[0])
-    dy = int(datas[1]) + 20
-    height = int(datas[3]) - int(datas[1])
-    width = int(datas[2]) - int(datas[0])
-
-    ms_bot = Bot(dx, dy, height, width)
-
+    InBattle = InResultPage = False
+    
     def full_menu_control():
         ms_bot.clicker('mainmenu')
         ms_bot.clicker('threesubmenu')
@@ -68,16 +50,24 @@ def main():
         if _found is not None:
             InResultPage = False
             system('cls')
+            end = time()
+
             print(f"Finished {main.counter}   打左{main.counter}舖\nreturned to menu, restart after 5 seconds\n")
+            print(f"Average: {round((end - start) / main.counter)} seconds")
             ms_bot.clicker('bottommainmenu')
             sleep(5)
             main()
 
 
-main.counter = 0
-get_screen_data()
-print("Bot ----- v1.2")
+print(f"Bot ----- v{VERSION}")
 print("start in 5 seconds, make sure the game is on the screen!")
 sleep(5)
 
+ms_bot = Bot()
+
+# statistics
+main.counter = 0
+start = time()
+
+# enter main loop
 main()
