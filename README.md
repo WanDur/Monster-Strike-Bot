@@ -17,22 +17,23 @@ This script perform action only by ratio in the game. It won't read or write any
    ```sh
    pip install -r requirements.txt
    ```
+3. NoxPlayer is recommended.
 ## How To Use
 
 Please finish all steps in [Getting started](#getting-started) first.  
-Make sure all files are under the same folder.
-1. Run WindowSizeChecker.exe (a file named [data] will be created)  
-![image](https://github.com/WanDur/Monster-Strike-Bot/blob/main/img/md/1.png)  
-圈住遊戲畫面 (不要包括最頂狀態列)  
-按左上角Save (建議調整遊戲窗口大小至 326x566 / 452x782 / 550x948 附近)  
-![image](https://github.com/WanDur/Monster-Strike-Bot/blob/main/img/md/2.png)
-
-2. 不要再更改遊戲視窗大小及位置
-3. Run ```main.py```  
-每輪開始前都會有五秒暫停時間  
+Make sure all files are under the same folder (Monster-Strike-Bot).
+1. Open NoxPlayer and enter the game main menu
+2. Run launcher.exe
+3. 每輪開始前都會有五秒暫停時間  
 如果要結束program就按 ctrl + c
 
 ## Versions
+- 1.3
+  - add more shooting angles
+  - all shoot start from the middle
+  - record time
+  - auto detect window size and position (removed WindowSizeChecker.exe)
+  - more precise clicks
 - 1.2
   -  shoot faster
 - 1.1
