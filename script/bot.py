@@ -45,7 +45,7 @@ class Bot:
         self.startBattleX  = 0.456063
         self.startBattleY  = 0.692067
         self.okButtonAX    = 0.448643
-        self.okButtonAY    = 0.645664
+        self.okButtonAY    = 0.654552
         self.okButtonBX    = 0.448643
         self.okButtonBY    = 0.831792
         self.bottommenuX   = 0.079457
