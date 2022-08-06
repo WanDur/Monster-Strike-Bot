@@ -48,6 +48,8 @@ class Bot:
         self.okButtonAY    = 0.654552
         self.okButtonBX    = 0.448643
         self.okButtonBY    = 0.831792
+        self.okButtonCX    = 0.449187
+        self.okButtonCY    = 0.608669
         self.bottommenuX   = 0.079457
         self.bottommenuY   = 0.946821
 
@@ -128,6 +130,12 @@ class Bot:
                     self.dx + self.width * self.okButtonBX), int(self.dy + self.height * self.okButtonBY)))
                 pywinauto.mouse.release(button='left', coords=(int(
                     self.dx + self.width * self.okButtonBX), int(self.dy + self.height * self.okButtonBY)))
+
+                moveTo(pos_cal(self.okButtonCX, self.okButtonCY))
+                pywinauto.mouse.press(button='left', coords=(int(
+                    self.dx + self.width * self.okButtonCX), int(self.dy + self.height * self.okButtonCY)))
+                pywinauto.mouse.release(button='left', coords=(int(
+                    self.dx + self.width * self.okButtonCX), int(self.dy + self.height * self.okButtonCY)))
             case 'bottommainmenu':
                 moveTo(pos_cal(self.bottommenuX, self.bottommenuY))
                 click()

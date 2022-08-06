@@ -39,13 +39,13 @@ def main():
         if _found:
             InBattle = False
             InResultPage = True
+            ms_bot.clicker('startBtn')
 
     print("In result page   結算中. . .")
 
     while InResultPage == True:
-        ms_bot.clicker('startBtn')
         ms_bot.clicker('menuspamclick')
-        sleep(1)
+        sleep(.5)
         _found = ms_bot.found_image('level')
         if _found is not None:
             InResultPage = False
