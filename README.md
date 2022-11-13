@@ -33,6 +33,9 @@ You can use option 1 if you have set the size already by SizeReference.exe.
 如果要結束program就按 ctrl + c 或者直接關掉程式
 
 ## Versions
+-1.4
+  - updated for ver. 25.0
+  - 使用進階捷徑
 - 1.3
   - add more shooting angles
   - all shoot start from the middle
