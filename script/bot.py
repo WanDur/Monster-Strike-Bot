@@ -11,7 +11,7 @@ def callback(hwnd, extra):
     y = rect[1]
     w = rect[2] - x
     h = rect[3] - y
-
+    
     global window_stat
     # change the name of your emulator here
     if GetWindowText(hwnd) == '夜神模擬器' or GetWindowText(hwnd) == 'NoxPlayer':  
