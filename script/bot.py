@@ -144,7 +144,7 @@ class Bot:
             case 'shortcut':
                 moveTo(pos_cal(self.shortcutX, self.shortcutY))
                 click()
-                sleep(3.5)
+                sleep(4)
 
     def found_image(self, image: str) -> bool:
         '''

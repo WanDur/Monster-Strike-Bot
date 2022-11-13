@@ -50,16 +50,16 @@ def main():
             system('cls')
             end = time()
 
-            print(f"Finished {main.counter}   打左{main.counter}舖\nreturned to menu, restart after 4 seconds\n")
+            print(f"Finished {main.counter}   打左{main.counter}舖\nreturned to menu, restart after 3 seconds\n")
             print(f"Average: {round((end - start) / main.counter)} seconds")
             ms_bot.clicker('bottommainmenu')
-            sleep(5)
+            sleep(3)
             main()
 
 
 print(f"Bot ----- v{VERSION}")
-print("start in 4 seconds, make sure the game is on the screen!")
-sleep(4)
+print("start in 3 seconds, make sure the game is on the screen!")
+sleep(3)
 
 ms_bot = Bot()
 
