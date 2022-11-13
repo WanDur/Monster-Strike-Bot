@@ -2,7 +2,7 @@ from bot import Bot
 from time import sleep, time
 from os import system
 
-VERSION = '1.3'
+VERSION = '1.4'
 
 def main():
     '''
@@ -22,9 +22,7 @@ def main():
         ms_bot.clicker('startbattle')
 
     def skipped_menu_control():
-        ms_bot.longPress('mainmenu')
-        ms_bot.clicker('selectsmalltrain')
-        ms_bot.clicker('singleplayer')
+        ms_bot.clicker('shortcut')
         ms_bot.clicker('selectmonster')
         ms_bot.clicker('startbattle')
 
@@ -52,7 +50,7 @@ def main():
             system('cls')
             end = time()
 
-            print(f"Finished {main.counter}   打左{main.counter}舖\nreturned to menu, restart after 5 seconds\n")
+            print(f"Finished {main.counter}   打左{main.counter}舖\nreturned to menu, restart after 4 seconds\n")
             print(f"Average: {round((end - start) / main.counter)} seconds")
             ms_bot.clicker('bottommainmenu')
             sleep(5)
@@ -60,8 +58,8 @@ def main():
 
 
 print(f"Bot ----- v{VERSION}")
-print("start in 5 seconds, make sure the game is on the screen!")
-sleep(5)
+print("start in 4 seconds, make sure the game is on the screen!")
+sleep(4)
 
 ms_bot = Bot()
 

@@ -1,5 +1,5 @@
 from random import randint
-from pyautogui import moveTo, dragTo, click, mouseDown, mouseUp, locateOnScreen
+from pyautogui import moveTo, dragTo, click, locateOnScreen
 from win32gui import GetWindowRect, EnumWindows, GetWindowText
 from time import sleep
 import pywinauto
@@ -14,7 +14,7 @@ def callback(hwnd, extra):
 
     global window_stat
     # change the name of your emulator here
-    if GetWindowText(hwnd) == '夜神模擬器':  
+    if GetWindowText(hwnd) == '夜神模擬器' or GetWindowText(hwnd) == 'NoxPlayer':  
         window_stat = (x, y, w, h)
 
 EnumWindows(callback, None)
@@ -28,30 +28,32 @@ class Bot:
         self.height = window_stat[3]
 
         # menu ratio
-        self.mainmenuX     = 0.459574
-        self.mainmenuY     = 0.797379
-        self.threesubmenuX = 0.236595
-        self.threesubmenuY = 0.630544
-        self.trainingMenuX = 0.457021
-        self.trainingMenuY = 0.466734
-        self.selecttrainAX = 0.457021
-        self.selecttrainAY = 0.353340
-        self.selecttrainBX = 0.457021
-        self.selecttrainBY = 0.469728
-        self.singleplayerX = 0.241652
-        self.singleplayerY = 0.528705
-        self.selectMonstX  = 0.457021
-        self.selectMonstY  = 0.63100
-        self.startBattleX  = 0.456063
-        self.startBattleY  = 0.692067
-        self.okButtonAX    = 0.448643
-        self.okButtonAY    = 0.654552
-        self.okButtonBX    = 0.448643
-        self.okButtonBY    = 0.831792
-        self.okButtonCX    = 0.449187
-        self.okButtonCY    = 0.608669
-        self.bottommenuX   = 0.079457
-        self.bottommenuY   = 0.946821
+        self.mainmenuY     = 0.79737
+        self.threesubmenuX = 0.23659
+        self.mainmenuX     = 0.45957
+        self.threesubmenuY = 0.63054
+        self.trainingMenuX = 0.45702
+        self.trainingMenuY = 0.46673
+        self.selecttrainAX = 0.45702
+        self.selecttrainAY = 0.35334
+        self.selecttrainBX = 0.45702
+        self.selecttrainBY = 0.46972
+        self.singleplayerX = 0.24165
+        self.singleplayerY = 0.52870
+        self.selectMonstX  = 0.45702
+        self.selectMonstY  = 0.77319
+        self.startBattleX  = 0.45606
+        self.startBattleY  = 0.69206
+        self.okButtonAX    = 0.44864
+        self.okButtonAY    = 0.65455
+        self.okButtonBX    = 0.44864
+        self.okButtonBY    = 0.83179
+        self.okButtonCX    = 0.44918
+        self.okButtonCY    = 0.60866
+        self.bottommenuX   = 0.07945
+        self.bottommenuY   = 0.94682
+        self.shortcutX     = 0.45652
+        self.shortcutY     = 0.74742
 
         # shoot reference position
         self.middle = (self.dx + self.width * 0.47384, self.dy + self.height * 0.50636)
@@ -139,20 +141,10 @@ class Bot:
             case 'bottommainmenu':
                 moveTo(pos_cal(self.bottommenuX, self.bottommenuY))
                 click()
-
-    def longPress(self, option: str):
-        '''
-        perform press action on the game screen
-        '''
-
-        def pos_cal(x: float, y: float):
-            return (self.dx + self.width * x, self.dy + self.height * y)
-
-        match option:
-            case 'mainmenu':
-                mouseDown(pos_cal(self.mainmenuX, self.mainmenuY))
-                sleep(3)
-                mouseUp()
+            case 'shortcut':
+                moveTo(pos_cal(self.shortcutX, self.shortcutY))
+                click()
+                sleep(3.5)
 
     def found_image(self, image: str) -> bool:
         '''
