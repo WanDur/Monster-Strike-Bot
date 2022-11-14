@@ -2,7 +2,7 @@ from bot import Bot
 from time import sleep, time
 from os import system
 
-VERSION = '1.5'
+VERSION = '1.6'
 
 def main():
     '''
@@ -10,17 +10,18 @@ def main():
     '''
     main.counter += 1
     InBattle = InResultPage = False
-
-    def waitandclick():
+    
+    def convert(seconds):
         '''
-        There can be a lag before selecting friend's monster.
-        This function can run the remaining code once the lag is finished.
+        convert seconds to hour:minute:second
         '''
-        while 1:
-            if ms_bot.found_image('card', c=0.95):
-                ms_bot.clicker('selectmonster')
-                ms_bot.clicker('startbattle')
-                break
+        seconds = seconds % (24 * 3600)
+        hour = seconds // 3600
+        seconds %= 3600
+        minutes = seconds // 60
+        seconds %= 60
+            
+        return "%d:%02d:%02d" % (hour, minutes, seconds)
     
     def full_menu_control():
         ms_bot.clicker('mainmenu')
@@ -29,11 +30,11 @@ def main():
         ms_bot.clicker('selectbigtrain')
         ms_bot.clicker('selectsmalltrain')
         ms_bot.clicker('singleplayer')
-        waitandclick()
+        ms_bot.waitandclick()
 
     def skipped_menu_control():
         ms_bot.clicker('shortcut')
-        waitandclick()
+        ms_bot.waitandclick()
 
     skipped_menu_control() if main.counter >= 2 else full_menu_control()
 
@@ -59,7 +60,8 @@ def main():
             system('cls')
             end = time()
 
-            print(f"Finished {main.counter}   打左{main.counter}舖\nreturned to menu, restart after {wait_time} seconds\n")
+            print(f"Finished {main.counter}   打左{main.counter}舖\nreturned to menu, restart after {wait_time} seconds")
+            print(f"Time spent {convert(end - start)}\n")
             print(f"Average: {round((end - start) / main.counter)} seconds")
             ms_bot.clicker('bottommainmenu')
             sleep(wait_time)
@@ -68,11 +70,13 @@ def main():
 
 print(f"Bot ----- v{VERSION}")
 while 1:
-    wait_time = int(input('How many second would you pause between each game: [1-5] '))
+    wait_time = int(input('How many second would you pause between each game (1-5): '))
     if wait_time < 1 or wait_time > 5:
         print('Invalid input, should be within 1 and 5')
         continue
-    else: break
+    else:
+        system('cls') 
+        break
 
 print("start in 3 seconds, make sure the game is on the screen!")
 sleep(3)

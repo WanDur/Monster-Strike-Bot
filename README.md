@@ -33,6 +33,9 @@ You can use option 1 if you have set the size already by SizeReference.exe.
 如果要結束program就按 ctrl + c 或者直接關掉程式
 
 ## Versions
+- 1.6
+  - show total time spent
+  - shoot faster
 - 1.5
   - Created function that can run remaining code once the lag is finished.
   - added card.png for the new function

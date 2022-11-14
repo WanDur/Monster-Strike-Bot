@@ -71,14 +71,14 @@ class Bot:
         '''
         shoot randomly
 
-        every shoot last for 2.2 seconds
+        every shoot last for 1.9 seconds
         '''
         finalPos = self.posList[randint(0, len(self.posList) - 1)]
         moveTo(self.middle)
         sleep(.2)
-        dragTo(finalPos, duration=0.12)
+        dragTo(finalPos, duration=0.1)
 
-        sleep(1.85)
+        sleep(1.6)
 
     def clicker(self, option: str):
         '''
@@ -155,3 +155,15 @@ class Bot:
 
         if((_img1 is not None) or (_img2 is not None) or (_img3 is not None)):
             return True
+
+    
+    def waitandclick(self):
+        '''
+        There can be a lag before selecting friend's monster.
+        This function can run the remaining code once the lag is finished.
+        '''
+        while 1:
+            if self.found_image('card', c=0.95):
+                self.clicker('selectmonster')
+                self.clicker('startbattle')
+                break
