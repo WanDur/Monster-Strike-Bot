@@ -33,6 +33,9 @@ You can use option 1 if you have set the size already by SizeReference.exe.
 如果要結束program就按 ctrl + c 或者直接關掉程式
 
 ## Versions
+- 1.5
+  - Created function that can run remaining code once the lag is finished.
+  - added card.png for the new function
 - 1.4
   - updated for ver. 25.0
   - 使用進階捷徑
@@ -46,6 +49,6 @@ You can use option 1 if you have set the size already by SizeReference.exe.
   -  shoot faster
 - 1.1
   - 增加長按返回上一次冒險的功能
-  - Added support to two more resolutions
+  - added support to two more resolutions
 - 1.0
   - initial release (自動打訓練)
