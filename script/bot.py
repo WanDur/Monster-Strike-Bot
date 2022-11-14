@@ -3,6 +3,24 @@ from pyautogui import moveTo, dragTo, click, locateOnScreen
 from win32gui import GetWindowRect, EnumWindows, GetWindowText
 from time import sleep
 import pywinauto
+import requests
+from bs4 import BeautifulSoup
+from re import search
+
+def check_update():
+    '''
+    check from github to get the latest version
+    '''
+    url = 'https://github.com/WanDur/Monster-Strike-Bot'
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, 'html.parser')
+    md = soup.find('article', class_='markdown-body entry-content container-lg')
+    h1 = str(md.find('h1'))
+    pos = search('Monster Strike Bot', h1).span()
+    v = h1[pos[0]:]
+    latest_version = v[20:23]
+    
+    return latest_version
 
 
 def callback(hwnd, extra):

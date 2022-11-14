@@ -1,8 +1,8 @@
-from bot import Bot
+from bot import Bot, check_update
 from time import sleep, time
 from os import system
 
-VERSION = '1.6'
+VERSION = '1.7'
 
 def main():
     '''
@@ -65,8 +65,11 @@ def main():
             sleep(wait_time)
             main()
 
+if check_update() == VERSION:
+    print(f"Bot ----- v{VERSION}")
+else:
+    print(f'Your version is v{VERSION}, v{check_update()} is available!\nPlease update the bot.\n')
 
-print(f"Bot ----- v{VERSION}")
 while 1:
     wait_time = int(input('How many second would you pause between each game (1-5): '))
     if wait_time < 1 or wait_time > 5:
