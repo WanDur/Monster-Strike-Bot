@@ -27,9 +27,7 @@ def main():
         ms_bot.clicker('mainmenu')
         ms_bot.clicker('threesubmenu')
         ms_bot.clicker('trainingmenu')
-        ms_bot.clicker('selectbigtrain')
-        ms_bot.clicker('selectsmalltrain')
-        ms_bot.clicker('singleplayer')
+        ms_bot.waitandclick2()
         ms_bot.waitandclick()
 
     def skipped_menu_control():

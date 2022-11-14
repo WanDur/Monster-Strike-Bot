@@ -99,7 +99,6 @@ class Bot:
             case 'trainingmenu':
                 moveTo(pos_cal(self.trainingMenuX, self.trainingMenuY))
                 click()
-                sleep(2)
             case 'selectbigtrain':
                 moveTo(pos_cal(self.selecttrainAX, self.selecttrainAY))
                 click()
@@ -114,11 +113,11 @@ class Bot:
             case 'selectmonster':
                 moveTo(pos_cal(self.selectMonstX, self.selectMonstY))
                 click()
-                sleep(1)
+                sleep(1.5)
             case 'startbattle':
                 moveTo(pos_cal(self.startBattleX, self.startBattleY))
                 click()
-                sleep(1)
+                sleep(0.5)
             case 'startBtn':
                 moveTo(pos_cal(self.okButtonAX, self.okButtonAY))
                 pywinauto.mouse.press(button='left', coords=(int(
@@ -166,4 +165,16 @@ class Bot:
             if self.found_image('card', c=0.95):
                 self.clicker('selectmonster')
                 self.clicker('startbattle')
+                break
+
+    def waitandclick2(self):
+        '''
+        There can be a lag after pressing training.
+        This function can run the remaining code once the lag is finished.
+        '''
+        while 1:
+            if self.found_image('select', c=0.85):
+                self.clicker('selectbigtrain')
+                self.clicker('selectsmalltrain')
+                self.clicker('singleplayer')
                 break
