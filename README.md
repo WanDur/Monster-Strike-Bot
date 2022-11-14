@@ -1,4 +1,4 @@
-# Monster Strike Bot
+# Monster Strike Bot v1.6
 
 This script perform action only by ratio in the game. It won't read or write any game data.
 
@@ -37,14 +37,14 @@ You can use option 1 if you have set the size already by SizeReference.exe.
   - show total time spent
   - shoot faster
 - 1.5
-  - Created function that can run remaining code once the lag is finished.
+  - created function that can run remaining code once the lag is finished
   - added card.png for the new function
 - 1.4
   - updated for ver. 25.0
   - 使用進階捷徑
 - 1.3
-  - add more shooting angles
-  - all shoot start from the middle
+  - added more shooting angles
+  - all shoots start from the middle
   - record time
   - auto detect window size and position (removed WindowSizeChecker.exe)
   - more precise clicks
