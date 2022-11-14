@@ -2,7 +2,7 @@ from bot import Bot
 from time import sleep, time
 from os import system
 
-VERSION = '1.4'
+VERSION = '1.5'
 
 def main():
     '''
@@ -10,6 +10,17 @@ def main():
     '''
     main.counter += 1
     InBattle = InResultPage = False
+
+    def waitandclick():
+        '''
+        There can be a lag before selecting friend's monster.
+        This function can run the remaining code once the lag is finished.
+        '''
+        while 1:
+            if ms_bot.found_image('card', c=0.95):
+                ms_bot.clicker('selectmonster')
+                ms_bot.clicker('startbattle')
+                break
     
     def full_menu_control():
         ms_bot.clicker('mainmenu')
@@ -18,13 +29,11 @@ def main():
         ms_bot.clicker('selectbigtrain')
         ms_bot.clicker('selectsmalltrain')
         ms_bot.clicker('singleplayer')
-        ms_bot.clicker('selectmonster')
-        ms_bot.clicker('startbattle')
+        waitandclick()
 
     def skipped_menu_control():
         ms_bot.clicker('shortcut')
-        ms_bot.clicker('selectmonster')
-        ms_bot.clicker('startbattle')
+        waitandclick()
 
     skipped_menu_control() if main.counter >= 2 else full_menu_control()
 
@@ -50,16 +59,16 @@ def main():
             system('cls')
             end = time()
 
-            print(f"Finished {main.counter}   打左{main.counter}舖\nreturned to menu, restart after 3 seconds\n")
+            print(f"Finished {main.counter}   打左{main.counter}舖\nreturned to menu, restart after 2 seconds\n")
             print(f"Average: {round((end - start) / main.counter)} seconds")
             ms_bot.clicker('bottommainmenu')
-            sleep(3)
+            sleep(2)
             main()
 
 
 print(f"Bot ----- v{VERSION}")
-print("start in 3 seconds, make sure the game is on the screen!")
-sleep(3)
+print("start in 2 seconds, make sure the game is on the screen!")
+sleep(2)
 
 ms_bot = Bot()
 

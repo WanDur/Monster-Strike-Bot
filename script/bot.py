@@ -111,7 +111,6 @@ class Bot:
             case 'singleplayer':
                 moveTo(pos_cal(self.singleplayerX, self.singleplayerY))
                 click()
-                sleep(5)
             case 'selectmonster':
                 moveTo(pos_cal(self.selectMonstX, self.selectMonstY))
                 click()
@@ -144,16 +143,15 @@ class Bot:
             case 'shortcut':
                 moveTo(pos_cal(self.shortcutX, self.shortcutY))
                 click()
-                sleep(4)
 
-    def found_image(self, image: str) -> bool:
+    def found_image(self, image: str, c=0.8) -> bool:
         '''
         return True if image is found
         :param image: image name, 'level' or 'ok'
         '''
-        _img1 = locateOnScreen(f"img\{image}_326x566.png", confidence=0.8)
-        _img2 = locateOnScreen(f"img\{image}_452x782.png", confidence=0.8)
-        _img3 = locateOnScreen(f"img\{image}_550x948.png", confidence=0.8)
+        _img1 = locateOnScreen(f"img\{image}_326x566.png", confidence=c)
+        _img2 = locateOnScreen(f"img\{image}_452x782.png", confidence=c)
+        _img3 = locateOnScreen(f"img\{image}_550x948.png", confidence=c)
 
         if((_img1 is not None) or (_img2 is not None) or (_img3 is not None)):
             return True
