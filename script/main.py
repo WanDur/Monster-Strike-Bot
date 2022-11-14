@@ -59,16 +59,23 @@ def main():
             system('cls')
             end = time()
 
-            print(f"Finished {main.counter}   打左{main.counter}舖\nreturned to menu, restart after 2 seconds\n")
+            print(f"Finished {main.counter}   打左{main.counter}舖\nreturned to menu, restart after {wait_time} seconds\n")
             print(f"Average: {round((end - start) / main.counter)} seconds")
             ms_bot.clicker('bottommainmenu')
-            sleep(2)
+            sleep(wait_time)
             main()
 
 
 print(f"Bot ----- v{VERSION}")
-print("start in 2 seconds, make sure the game is on the screen!")
-sleep(2)
+while 1:
+    wait_time = int(input('How many second would you pause between each game: [1-5] '))
+    if wait_time < 1 or wait_time > 5:
+        print('Invalid input, should be within 1 and 5')
+        continue
+    else: break
+
+print("start in 3 seconds, make sure the game is on the screen!")
+sleep(3)
 
 ms_bot = Bot()
 

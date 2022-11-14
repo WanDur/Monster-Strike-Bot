@@ -76,7 +76,7 @@ class Bot:
         finalPos = self.posList[randint(0, len(self.posList) - 1)]
         moveTo(self.middle)
         sleep(.2)
-        dragTo(finalPos, duration=0.15)
+        dragTo(finalPos, duration=0.12)
 
         sleep(1.85)
 
