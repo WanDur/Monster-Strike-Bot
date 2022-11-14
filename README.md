@@ -1,4 +1,4 @@
-# Monster Strike Bot v1.6
+# Monster Strike Bot v1.7
 
 This script perform action only by ratio in the game. It won't read or write any game data.
 
@@ -33,6 +33,8 @@ You can use option 1 if you have set the size already by SizeReference.exe.
 如果要結束program就按 ctrl + c 或者直接關掉程式
 
 ## Versions
+- 1.7
+  - check update automatically (new libraries required)
 - 1.6
   - show total time spent
   - shoot faster
