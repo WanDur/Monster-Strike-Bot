@@ -68,10 +68,16 @@ class Bot:
         self.okButtonBY    = 0.83179
         self.okButtonCX    = 0.44918
         self.okButtonCY    = 0.60866
+        self.okButtonDX    = 0.45013
+        self.okButtonDY    = 0.80645
         self.bottommenuX   = 0.07945
         self.bottommenuY   = 0.94682
         self.shortcutX     = 0.45652
         self.shortcutY     = 0.74742
+        self.setshortcutX  = 0.44474
+        self.setshortcutY  = 0.70000
+        self.shortcutbtnX  = 0.12329
+        self.shortcutbtnY  = 0.56452
 
         # shoot reference position
         self.middle = (self.dx + self.width * 0.47384, self.dy + self.height * 0.50636)
@@ -155,12 +161,26 @@ class Bot:
                     self.dx + self.width * self.okButtonCX), int(self.dy + self.height * self.okButtonCY)))
                 pywinauto.mouse.release(button='left', coords=(int(
                     self.dx + self.width * self.okButtonCX), int(self.dy + self.height * self.okButtonCY)))
+            case 'okBtnD':
+                moveTo(pos_cal(self.okButtonDX, self.okButtonDY))
+                pywinauto.mouse.press(button='left', coords=(int(
+                    self.dx + self.width * self.okButtonDX), int(self.dy + self.height * self.okButtonDY)))
+                pywinauto.mouse.release(button='left', coords=(int(
+                    self.dx + self.width * self.okButtonDX), int(self.dy + self.height * self.okButtonDY)))
             case 'bottommainmenu':
                 moveTo(pos_cal(self.bottommenuX, self.bottommenuY))
                 click()
             case 'shortcut':
                 moveTo(pos_cal(self.shortcutX, self.shortcutY))
                 click()
+            case 'setshortcut':
+                moveTo(pos_cal(self.setshortcutX, self.setshortcutY))
+                click()
+                sleep(.2)
+                moveTo(pos_cal(self.shortcutbtnX, self.shortcutbtnY))
+                click()
+                sleep(.2)
+                self.clicker('okBtnD')
 
     def found_image(self, image: str, c=0.8) -> bool:
         '''

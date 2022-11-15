@@ -2,14 +2,7 @@ from bot import Bot, check_update
 from time import sleep, time
 from os import system
 
-VERSION = '1.8'
-
-def image_not_match(image: str, message: str):
-    if ms_bot.found_image(image) != True:
-            system('cls')
-            print(message)
-            sleep(2)
-            exit(0)
+VERSION = '1.9'
 
 def main():
     '''
@@ -40,7 +33,11 @@ def main():
         ms_bot.waitandclick()
 
     def skipped_menu_control():
-        image_not_match('shortcut', '你沒有開啟進階捷徑!\nOpen it and rerun the bot')
+        if ms_bot.found_image('shortcut') != True:
+            system('cls')
+            print('你沒有開啟進階捷徑!\nNow opening')
+            sleep(1)
+            ms_bot.clicker('setshortcut')
         ms_bot.clicker('shortcut')
         ms_bot.waitandclick()
 
@@ -92,7 +89,11 @@ print("start in 3 seconds")
 sleep(3)
 
 ms_bot = Bot()
-image_not_match('level', 'The game is not on the screen or it is in wrong size!')
+if ms_bot.found_image('level') != True:
+    system('cls')
+    print('The game is not on the screen or it is in wrong size!')
+    sleep(2)
+    exit(0)
 
 # statistics
 main.counter = 0
