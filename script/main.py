@@ -4,6 +4,13 @@ from os import system
 
 VERSION = '1.7'
 
+def image_not_match(image: str, message: str):
+    if ms_bot.found_image(image) != True:
+            system('cls')
+            print(message)
+            sleep(2)
+            exit(0)
+
 def main():
     '''
     main loop of the bot
@@ -27,10 +34,13 @@ def main():
         ms_bot.clicker('mainmenu')
         ms_bot.clicker('threesubmenu')
         ms_bot.clicker('trainingmenu')
-        ms_bot.waitandclick2()
+        ms_bot.clicker('selectbigtrain')
+        ms_bot.clicker('selectsmalltrain')
+        ms_bot.clicker('singleplayer')
         ms_bot.waitandclick()
 
     def skipped_menu_control():
+        image_not_match('shortcut', '你沒有開啟進階捷徑!\nOpen it and rerun the bot')
         ms_bot.clicker('shortcut')
         ms_bot.waitandclick()
 
@@ -58,9 +68,8 @@ def main():
             system('cls')
             end = time()
 
-            print(f"Finished {main.counter}   打左{main.counter}舖\nreturned to menu, restart after {wait_time} seconds")
-            print(f"Time spent {convert(end - start)}\n")
-            print(f"Average: {round((end - start) / main.counter)} seconds")
+            print(f"Finished {main.counter}   打左{main.counter}舖\nreturned to menu, restart after {wait_time} seconds\n")
+            print(f"Time spent {convert(end - start)}\nAverage: {round((end - start) / main.counter)} seconds")
             ms_bot.clicker('bottommainmenu')
             sleep(wait_time)
             main()
@@ -79,10 +88,11 @@ while 1:
         system('cls') 
         break
 
-print("start in 3 seconds, make sure the game is on the screen!")
+print("start in 3 seconds")
 sleep(3)
 
 ms_bot = Bot()
+image_not_match('level', 'The game is not on the screen or it is in wrong size!')
 
 # statistics
 main.counter = 0

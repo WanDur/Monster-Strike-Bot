@@ -117,6 +117,7 @@ class Bot:
             case 'trainingmenu':
                 moveTo(pos_cal(self.trainingMenuX, self.trainingMenuY))
                 click()
+                sleep(1.5)
             case 'selectbigtrain':
                 moveTo(pos_cal(self.selecttrainAX, self.selecttrainAY))
                 click()
@@ -164,13 +165,12 @@ class Bot:
     def found_image(self, image: str, c=0.8) -> bool:
         '''
         return True if image is found
-        :param image: image name, 'level' or 'ok'
+        :param image: image name
         '''
         _img1 = locateOnScreen(f"img\{image}_326x566.png", confidence=c)
         _img2 = locateOnScreen(f"img\{image}_452x782.png", confidence=c)
-        _img3 = locateOnScreen(f"img\{image}_550x948.png", confidence=c)
 
-        if((_img1 is not None) or (_img2 is not None) or (_img3 is not None)):
+        if((_img1 is not None) or (_img2 is not None)):
             return True
 
     
@@ -183,16 +183,4 @@ class Bot:
             if self.found_image('card', c=0.95):
                 self.clicker('selectmonster')
                 self.clicker('startbattle')
-                break
-
-    def waitandclick2(self):
-        '''
-        There can be a lag after pressing training.
-        This function can run the remaining code once the lag is finished.
-        '''
-        while 1:
-            if self.found_image('select', c=0.85):
-                self.clicker('selectbigtrain')
-                self.clicker('selectsmalltrain')
-                self.clicker('singleplayer')
                 break
