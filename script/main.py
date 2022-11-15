@@ -34,9 +34,7 @@ def main():
 
     def skipped_menu_control():
         if ms_bot.found_image('shortcut') != True:
-            system('cls')
-            print('你沒有開啟進階捷徑!\nNow opening')
-            sleep(1)
+            sleep(.5)
             ms_bot.clicker('setshortcut')
         ms_bot.clicker('shortcut')
         ms_bot.waitandclick()
