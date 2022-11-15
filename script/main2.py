@@ -29,22 +29,13 @@ def main():
         seconds %= 60
             
         return "%d:%02d:%02d" % (hour, minutes, seconds)
-    
-    def full_menu_control():
-        ms_bot.clicker('mainmenu')
-        ms_bot.clicker('threesubmenu')
-        ms_bot.clicker('trainingmenu')
-        ms_bot.clicker('selectbigtrain')
-        ms_bot.clicker('selectsmalltrain')
-        ms_bot.clicker('singleplayer')
-        ms_bot.waitandclick()
 
     def skipped_menu_control():
         image_not_match('shortcut', '你沒有開啟進階捷徑!\nOpen it and rerun the bot')
         ms_bot.clicker('shortcut')
         ms_bot.waitandclick()
 
-    skipped_menu_control() if main.counter >= 2 else full_menu_control()
+    skipped_menu_control()
 
     print("Battle started   打緊. . .")
 
@@ -68,25 +59,16 @@ def main():
             system('cls')
             end = time()
 
-            print(f"Finished {main.counter}   打左{main.counter}舖\nreturned to menu, restart after {wait_time} seconds\n")
-            print(f"Time spent {convert(end - start)}\nAverage: {round((end - start) / main.counter)} seconds")
+            print(f"Finished {main.counter}   打左{main.counter}舖\nreturned to menu, restart after 1 second\n")
+            print(f"Time spent {convert(end - start)}\nAverage: {round((end - start) / main.counter)} seconds\n")
             ms_bot.clicker('bottommainmenu')
-            sleep(wait_time)
+            sleep(1)
             main()
 
 if check_update() == VERSION:
     print(f"Bot ----- v{VERSION}")
 else:
     print(f'Your version is v{VERSION}, v{check_update()} is available!\nPlease update the bot.\n')
-
-while 1:
-    wait_time = int(input('How many second would you pause between each game (1-5): '))
-    if wait_time < 1 or wait_time > 5:
-        print('Invalid input, should be within 1 and 5')
-        continue
-    else:
-        system('cls') 
-        break
 
 print("start in 3 seconds")
 sleep(3)
