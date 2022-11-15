@@ -111,6 +111,11 @@ class Bot:
         def pos_cal(x: float, y: float):
             return (self.dx + self.width * x, self.dy + self.height * y)
 
+        def click_pywinauto(x: float, y: float):
+            pywinauto.mouse.press(button='left', coords=(int(self.dx + self.width * x), int(self.dy + self.height * y)))
+            pywinauto.mouse.release(button='left', coords=(int(self.dx + self.width * x), int(self.dy + self.height * y)))
+            return  
+
         match option:
             case 'mainmenu':
                 moveTo(pos_cal(self.mainmenuX, self.mainmenuY))
@@ -145,28 +150,16 @@ class Bot:
                 sleep(0.5)
             case 'startBtn':
                 moveTo(pos_cal(self.okButtonAX, self.okButtonAY))
-                pywinauto.mouse.press(button='left', coords=(int(
-                    self.dx + self.width * self.okButtonAX), int(self.dy + self.height * self.okButtonAY)))
-                pywinauto.mouse.release(button='left', coords=(int(
-                    self.dx + self.width * self.okButtonAX), int(self.dy + self.height * self.okButtonAY)))
+                click_pywinauto(self.okButtonAX, self.okButtonAY)
             case 'menuspamclick':
                 moveTo(pos_cal(self.okButtonBX, self.okButtonBY))
-                pywinauto.mouse.press(button='left', coords=(int(
-                    self.dx + self.width * self.okButtonBX), int(self.dy + self.height * self.okButtonBY)))
-                pywinauto.mouse.release(button='left', coords=(int(
-                    self.dx + self.width * self.okButtonBX), int(self.dy + self.height * self.okButtonBY)))
+                click_pywinauto(self.okButtonBX, self.okButtonBY)
 
                 moveTo(pos_cal(self.okButtonCX, self.okButtonCY))
-                pywinauto.mouse.press(button='left', coords=(int(
-                    self.dx + self.width * self.okButtonCX), int(self.dy + self.height * self.okButtonCY)))
-                pywinauto.mouse.release(button='left', coords=(int(
-                    self.dx + self.width * self.okButtonCX), int(self.dy + self.height * self.okButtonCY)))
+                click_pywinauto(self.okButtonCX, self.okButtonCY)
             case 'okBtnD':
                 moveTo(pos_cal(self.okButtonDX, self.okButtonDY))
-                pywinauto.mouse.press(button='left', coords=(int(
-                    self.dx + self.width * self.okButtonDX), int(self.dy + self.height * self.okButtonDY)))
-                pywinauto.mouse.release(button='left', coords=(int(
-                    self.dx + self.width * self.okButtonDX), int(self.dy + self.height * self.okButtonDY)))
+                click_pywinauto(self.okButtonDX, self.okButtonDY)
             case 'bottommainmenu':
                 moveTo(pos_cal(self.bottommenuX, self.bottommenuY))
                 click()
