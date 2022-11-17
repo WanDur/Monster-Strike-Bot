@@ -1,8 +1,8 @@
-from bot import Bot, check_update
+from bot import Bot
 from time import sleep, time
 from os import system
 
-VERSION = '1.9'
+VERSION = '1.9.1'
 
 def main():
     '''
@@ -25,7 +25,7 @@ def main():
 
     def skipped_menu_control():
         if ms_bot.found_image('shortcut') != True:
-            sleep(0.5)
+            sleep(.5)
             ms_bot.clicker('setshortcut')
         ms_bot.clicker('shortcut')
         ms_bot.waitandclick()
@@ -60,15 +60,16 @@ def main():
             sleep(1)
             main()
 
-if check_update() == VERSION:
+ms_bot = Bot()
+
+if ms_bot.check_update() == VERSION:
     print(f"Bot ----- v{VERSION}")
 else:
-    print(f'Your version is v{VERSION}, v{check_update()} is available!\nPlease update the bot.\n')
+    print(f'Your version is v{VERSION}, v{ms_bot.check_update()} is available!\nPlease update the bot.\n')
 
 print("start in 3 seconds")
 sleep(3)
 
-ms_bot = Bot()
 if ms_bot.found_image('level') != True:
     system('cls')
     print('The game is not on the screen or it is in wrong size!')

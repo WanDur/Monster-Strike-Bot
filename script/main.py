@@ -2,7 +2,7 @@ from bot import Bot
 from time import sleep, time
 from os import system
 
-VERSION = '1.9'
+VERSION = '1.9.1'
 
 def main():
     '''
@@ -64,7 +64,7 @@ def main():
             end = time()
 
             print(f"Finished {main.counter}   打左{main.counter}舖\nreturned to menu, restart after {wait_time} seconds\n")
-            print(f"Time spent {convert(end - start)}\nAverage: {round((end - start) / main.counter)} seconds")
+            print(f"Time spent {convert(end - start)}\nAverage: {round((end - start) / main.counter)} seconds\n")
             ms_bot.clicker('bottommainmenu')
             sleep(wait_time)
             main()
