@@ -2,7 +2,7 @@ from bot import Bot
 from time import sleep, time
 from os import system
 
-VERSION = '1.9.1'
+VERSION = '1.9.2'
 
 def main():
     '''
