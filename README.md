@@ -1,4 +1,4 @@
-# Monster Strike Bot v1.9.1
+# Monster Strike Bot v1.9.2
 
 This script perform action only by ratio in the game. It won't read or write any game data.
 
@@ -33,11 +33,14 @@ You can use option 1 if you have set the size already by SizeReference.exe.
 如果要結束program就按 ctrl + c 或者直接關掉程式
 
 ## Versions
-- 1.9.1
-  - small fixes
-  - added one more click while returning to menu
 - 1.9
-  - 自動使用進階捷徑
+  - 1.9.2
+    - small fixes
+  - 1.9.1
+    - small fixes
+    - added one more click while returning to menu
+  - 1.9.0
+    - 自動使用進階捷徑
 - 1.8
   - added new launch mode and modified the launcher
 - 1.7
