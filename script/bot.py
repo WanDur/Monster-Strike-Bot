@@ -199,6 +199,7 @@ class Bot:
         h1 = str(md.find('h1'))
         pos = search('Monster Strike Bot', h1).span()
         v = h1[pos[0]:]
-        latest_version = v[20:23]
-        
+        v = v[20:]
+        latest_version = v[:5]
+
         return latest_version
