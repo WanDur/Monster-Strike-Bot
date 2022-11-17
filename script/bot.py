@@ -7,22 +7,6 @@ import requests
 from bs4 import BeautifulSoup
 from re import search
 
-def check_update():
-    '''
-    check from github to get the latest version
-    '''
-    url = 'https://github.com/WanDur/Monster-Strike-Bot'
-    response = requests.get(url)
-    soup = BeautifulSoup(response.text, 'html.parser')
-    md = soup.find('article', class_='markdown-body entry-content container-lg')
-    h1 = str(md.find('h1'))
-    pos = search('Monster Strike Bot', h1).span()
-    v = h1[pos[0]:]
-    latest_version = v[20:23]
-    
-    return latest_version
-
-
 def callback(hwnd, extra):
     rect = GetWindowRect(hwnd)
     x = rect[0]
@@ -70,6 +54,8 @@ class Bot:
         self.okButtonCY    = 0.60866
         self.okButtonDX    = 0.45013
         self.okButtonDY    = 0.80645
+        self.okButtonEX    = 0.44594
+        self.okButtonEY    = 0.71197
         self.bottommenuX   = 0.07945
         self.bottommenuY   = 0.94682
         self.shortcutX     = 0.45652
@@ -157,6 +143,9 @@ class Bot:
 
                 moveTo(pos_cal(self.okButtonCX, self.okButtonCY))
                 click_pywinauto(self.okButtonCX, self.okButtonCY)
+
+                moveTo(pos_cal(self.okButtonEX, self.okButtonEY))
+                click_pywinauto(self.okButtonEX, self.okButtonEY)
             case 'okBtnD':
                 moveTo(pos_cal(self.okButtonDX, self.okButtonDY))
                 click_pywinauto(self.okButtonDX, self.okButtonDY)
@@ -197,3 +186,19 @@ class Bot:
                 self.clicker('selectmonster')
                 self.clicker('startbattle')
                 break
+    
+    @staticmethod
+    def check_update():
+        '''
+        check from github to get the latest version
+        '''
+        url = 'https://github.com/WanDur/Monster-Strike-Bot'
+        response = requests.get(url)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        md = soup.find('article', class_='markdown-body entry-content container-lg')
+        h1 = str(md.find('h1'))
+        pos = search('Monster Strike Bot', h1).span()
+        v = h1[pos[0]:]
+        latest_version = v[20:23]
+        
+        return latest_version

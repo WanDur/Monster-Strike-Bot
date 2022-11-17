@@ -1,4 +1,4 @@
-from bot import Bot, check_update
+from bot import Bot
 from time import sleep, time
 from os import system
 
@@ -69,10 +69,12 @@ def main():
             sleep(wait_time)
             main()
 
-if check_update() == VERSION:
+ms_bot = Bot()
+
+if ms_bot.check_update() == VERSION:
     print(f"Bot ----- v{VERSION}")
 else:
-    print(f'Your version is v{VERSION}, v{check_update()} is available!\nPlease update the bot.\n')
+    print(f'Your version is v{VERSION}, v{ms_bot.check_update()} is available!\nPlease update the bot.\n')
 
 while 1:
     wait_time = int(input('How many second would you pause between each game (1-5): '))
@@ -86,7 +88,6 @@ while 1:
 print("start in 3 seconds")
 sleep(3)
 
-ms_bot = Bot()
 if ms_bot.found_image('level') != True:
     system('cls')
     print('The game is not on the screen or it is in wrong size!')
