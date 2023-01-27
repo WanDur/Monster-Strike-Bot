@@ -53,9 +53,7 @@ def main():
             InResultPage = False
             system('cls')
             end = time()
-
-            while ms_bot.found_image('battle') != True:
-                ms_bot.clicker('bottommainmenu')
+            ms_bot.clicker('bottommainmenu')
 
             print(f"Finished {main.counter}   打左{main.counter}舖\nreturned to menu, restart after 1 second\n")
             print(f"Time spent {convert(end - start)}\nAverage: {round((end - start) / main.counter)} seconds\n")
