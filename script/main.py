@@ -62,11 +62,12 @@ def main():
             InResultPage = False
             system('cls')
             end = time()
+            while ms_bot.found_image('battle') != True:
+                ms_bot.clicker('bottommainmenu')
 
-            print(f"Finished {main.counter}   打左{main.counter}舖\nreturned to menu, restart after {wait_time} seconds\n")
+            print(f"Finished {main.counter}   打左{main.counter}舖\nreturned to menu, restart after 1 seconds\n")
             print(f"Time spent {convert(end - start)}\nAverage: {round((end - start) / main.counter)} seconds\n")
-            ms_bot.clicker('bottommainmenu')
-            sleep(wait_time)
+            sleep(1)
             main()
 
 ms_bot = Bot()
@@ -75,15 +76,6 @@ if ms_bot.check_update() == VERSION:
     print(f"Bot ----- v{VERSION}")
 else:
     print(f'Your version is v{VERSION}, v{ms_bot.check_update()} is available!\nPlease update the bot.\n')
-
-while 1:
-    wait_time = int(input('How many second would you pause between each game (1-5): '))
-    if wait_time < 1 or wait_time > 5:
-        print('Invalid input, should be within 1 and 5')
-        continue
-    else:
-        system('cls') 
-        break
 
 print("start in 3 seconds")
 sleep(3)
