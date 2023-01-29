@@ -9,7 +9,7 @@ This script perform action only by ratio in the game. It won't read or write any
 
 ## Getting started
 
-1. Download the release folder [download](https://github.com/WanDur/Monster-Strike-Bot/releases/tag/releases)
+1. [Download](https://github.com/WanDur/Monster-Strike-Bot/releases/tag/releases) the release folder (vX.X)
 2. Run Launcher.exe
 3. NoxPlayer is recommended.
 ## How To Use
