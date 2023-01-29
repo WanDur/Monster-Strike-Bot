@@ -152,6 +152,10 @@ class Bot:
             case 'bottommainmenu':
                 moveTo(pos_cal(self.bottommenuX, self.bottommenuY))
                 click()
+                sleep(.5)
+                click()
+                sleep(1)
+                click()
             case 'shortcut':
                 moveTo(pos_cal(self.shortcutX, self.shortcutY))
                 click()
