@@ -1,4 +1,4 @@
-# Monster Strike Bot v1.9.2
+# Monster Strike Bot v2.0
 
 This script perform action only by ratio in the game. It won't read or write any game data.
 
