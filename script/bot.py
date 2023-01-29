@@ -206,4 +206,7 @@ class Bot:
         v = v[20:]
         latest_version = v[:5]
 
+        if latest_version[3] == '<':
+            latest_version = latest_version[:3]
+
         return latest_version

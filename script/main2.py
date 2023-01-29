@@ -1,8 +1,10 @@
 from bot import Bot
 from time import sleep, time
 from os import system
+from threading import Thread
+import sys
 
-VERSION = '1.9.2'
+VERSION = '2.0'
 
 def main():
     '''
@@ -24,9 +26,8 @@ def main():
         return "%d:%02d:%02d" % (hour, minutes, seconds)
 
     def skipped_menu_control():
-        if ms_bot.found_image('shortcut') != True:
-            sleep(.5)
-            ms_bot.clicker('setshortcut')
+        sleep(.5)
+        ms_bot.clicker('setshortcut')
         ms_bot.clicker('shortcut')
         ms_bot.waitandclick()
 
@@ -62,10 +63,38 @@ def main():
 
 ms_bot = Bot()
 
-if ms_bot.check_update() == VERSION:
-    print(f"Bot ----- v{VERSION}")
-else:
-    print(f'Your version is v{VERSION}, v{ms_bot.check_update()} is available!\nPlease update the bot.\n')
+# fetching data
+def fetch_version_and_check():
+    done = False
+    def loading():
+        while done == False:
+            if done:
+                break
+            sys.stdout.write('\rFetching data |')
+            sleep(0.1)
+            sys.stdout.write('\rFetching data /')
+            sleep(0.1)
+            sys.stdout.write('\rFetching data -')
+            sleep(0.1)
+            sys.stdout.write('\rFetching data \\')
+            sleep(0.1)
+        system('cls')
+        sys.stdout.write('\rDone fetching!\n\n')
+
+    t_load = Thread(target=loading)
+    t_load.start()
+    latest_version = ms_bot.check_update()
+    done = True
+    sleep(2)
+
+    if latest_version == VERSION:
+        print(f"Bot ----- v{VERSION}")
+    else:
+        print(f'Your version is v{VERSION}, v{ms_bot.check_update()} is available!\nPlease update the bot.\n')
+        sleep(3)
+        exit(0)
+
+fetch_version_and_check()
 
 print("start in 3 seconds")
 sleep(3)
@@ -73,7 +102,7 @@ sleep(3)
 if ms_bot.found_image('level') != True:
     system('cls')
     print('The game is not on the screen or it is in wrong size!')
-    sleep(2)
+    sleep(3)
     exit(0)
 
 # statistics
