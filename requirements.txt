@@ -1,7 +1,0 @@
-pyautogui
-pywinauto
-Pillow
-opencv-python
-win32gui
-bs4
-requests
