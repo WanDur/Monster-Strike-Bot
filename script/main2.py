@@ -29,7 +29,12 @@ def main():
         sleep(.5)
         ms_bot.clicker('setshortcut')
         ms_bot.clicker('shortcut')
-        ms_bot.waitandclick()
+        error = ms_bot.waitandclick()
+        if error == False:
+            main.counter -= 1
+            sleep(2)
+            ms_bot.clicker('bottommainmenu')
+            main()
 
     skipped_menu_control()
 
