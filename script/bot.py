@@ -6,6 +6,8 @@ import pywinauto
 import requests
 from bs4 import BeautifulSoup
 from re import search
+import sys
+import ctypes
 
 def callback(hwnd, extra):
     rect = GetWindowRect(hwnd)
@@ -24,6 +26,11 @@ EnumWindows(callback, None)
 class Bot:
     def __init__(self):
         # initialize
+        try: 
+            window_stat
+        except:
+            Bot.show_error_box("Emulator not found.")
+            Bot.bot_exit()
         self.dx = window_stat[0]
         self.dy = window_stat[1]
         self.width = window_stat[2]
@@ -205,3 +212,15 @@ class Bot:
             latest_version = latest_version[:3]
 
         return latest_version
+
+    @staticmethod
+    def bot_exit():
+        sys.exit(0)
+
+    @staticmethod
+    def sysio_print(text:str):
+        sys.stdout.write(text)
+
+    @staticmethod
+    def show_error_box(text:str):
+        ctypes.windll.user32.MessageBoxW(0, text, "", 0x10)

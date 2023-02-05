@@ -2,9 +2,8 @@ from bot import Bot
 from time import sleep, time
 from os import system
 from threading import Thread
-import sys
 
-VERSION = '2.0'
+VERSION = '2.1'
 
 def main():
     '''
@@ -75,29 +74,28 @@ def fetch_version_and_check():
         while done == False:
             if done:
                 break
-            sys.stdout.write('\rFetching data |')
+            ms_bot.sysio_print('\rChecking version |')
             sleep(0.1)
-            sys.stdout.write('\rFetching data /')
+            ms_bot.sysio_print('\rChecking version /')
             sleep(0.1)
-            sys.stdout.write('\rFetching data -')
+            ms_bot.sysio_print('\rChecking version -')
             sleep(0.1)
-            sys.stdout.write('\rFetching data \\')
+            ms_bot.sysio_print('\rChecking version \\')
             sleep(0.1)
         system('cls')
-        sys.stdout.write('\rDone fetching!\n\n')
+        ms_bot.sysio_print('\rDone fetching!\n\n')
 
     t_load = Thread(target=loading)
     t_load.start()
     latest_version = ms_bot.check_update()
     done = True
-    sleep(2)
+    sleep(1.5)
 
     if latest_version == VERSION:
         print(f"Bot ----- v{VERSION}")
     else:
-        print(f'Your version is v{VERSION}, v{ms_bot.check_update()} is available!\nPlease update the bot.\n')
-        sleep(3)
-        exit(0)
+        ms_bot.show_error_box(f'Your version is v{VERSION}, v{ms_bot.check_update()} is available!\nPlease update the bot.\n')
+        ms_bot.bot_exit()
 
 fetch_version_and_check()
 
@@ -106,9 +104,8 @@ sleep(3)
 
 if ms_bot.found_image('level') != True:
     system('cls')
-    print('The game is not on the screen or it is in wrong size!')
-    sleep(3)
-    exit(0)
+    ms_bot.show_error_box('The game is not found on the screen or it is in wrong size!')
+    ms_bot.bot_exit()
 
 # statistics
 main.counter = 0
