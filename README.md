@@ -1,4 +1,4 @@
-# Monster Strike Bot v2.0
+# Monster Strike Bot v2.1
 
 This script perform action only by ratio in the game. It won't read or write any game data.
 
@@ -19,6 +19,9 @@ Please finish all steps in [Getting started](#getting-started) first.
 2. Press `ctrl + c` or close the program directly if you want to quit
 
 ## Versions
+- 2.1
+  - small fixes
+  - new error handling
 - 2.0
   - added new launcher
   - python files are packed into .exe, it can be downloaded in release
