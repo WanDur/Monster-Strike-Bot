@@ -54,21 +54,19 @@ def main():
     print("Battle started   打緊. . .")
 
     InBattle = True
-    while InBattle == True:
+    while InBattle:
         ms_bot.shoot()
-        _found = ms_bot.found_image('ok')
-        if _found:
+        if ms_bot.found_image('ok'):
             InBattle = False
             InResultPage = True
             ms_bot.clicker('startBtn')
 
     print("In result page   結算中. . .")
 
-    while InResultPage == True:
+    while InResultPage:
         ms_bot.clicker('menuspamclick')
         sleep(.5)
-        _found = ms_bot.found_image('level')
-        if _found is not None:
+        if ms_bot.found_image('level'):
             InResultPage = False
             system('cls')
             end = time()
