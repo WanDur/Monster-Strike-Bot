@@ -3,7 +3,7 @@ from time import sleep, time
 from os import system
 from threading import Thread
 
-VERSION = '2.1'
+VERSION = '2.2'
 
 def main():
     '''
@@ -85,14 +85,14 @@ def fetch_version_and_check():
 
     t_load = Thread(target=loading)
     t_load.start()
-    latest_version = ms_bot.check_update()
+    latest_version = ms_bot.check_update(VERSION)
     done = True
     sleep(1.5)
 
     if latest_version == VERSION:
         print(f"Bot ----- v{VERSION}")
     else:
-        ms_bot.show_error_box(f'Your version is v{VERSION}, v{ms_bot.check_update()} is available!\nPlease update the bot.\n')
+        ms_bot.show_error_box(f'Your version is v{VERSION}, v{ms_bot.check_update(VERSION)} is available!\nPlease update the bot.\n')
         ms_bot.bot_exit()
 
 fetch_version_and_check()

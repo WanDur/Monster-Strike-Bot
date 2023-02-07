@@ -1,11 +1,9 @@
 from random import randint
 from pyautogui import moveTo, dragTo, click, locateOnScreen
 from win32gui import GetWindowRect, EnumWindows, GetWindowText
-from time import sleep
+from time import sleep, time
 import pywinauto
 import requests
-from bs4 import BeautifulSoup
-from re import search
 import sys
 import ctypes
 
@@ -177,41 +175,32 @@ class Bot:
             return True
 
     
-    def waitandclick(self):
+    def waitandclick(self, timeout=12):
         '''
         There can be a lag before selecting friend's monster.
         This function can run the remaining code once the lag is finished.
         '''
-        i = 0
-        while 1:
-            i += 1
+        start_time = time()
+        while time() - start_time < timeout:
             if self.found_image('card', c=0.95):
                 self.clicker('selectmonster')
                 self.clicker('startbattle')
                 break
-            if i > 50:
-                print('Something is wrong! The bot will start again.')
-                return False
+        print('Timed out: The bot will start again.')
+        return False
     
     @staticmethod
-    def check_update():
-        '''
-        check from github to get the latest version
-        '''
-        url = 'https://github.com/WanDur/Monster-Strike-Bot'
+    def check_update(local_version:str):
+        url = 'https://api.github.com/repos/WanDur/Monster-Strike-Bot/releases/latest'
         response = requests.get(url)
-        soup = BeautifulSoup(response.text, 'html.parser')
-        md = soup.find('article', class_='markdown-body entry-content container-lg')
-        h1 = str(md.find('h1'))
-        pos = search('Monster Strike Bot', h1).span()
-        v = h1[pos[0]:]
-        v = v[20:]
-        latest_version = v[:5]
-
-        if latest_version[3] == '<':
-            latest_version = latest_version[:3]
-
-        return latest_version
+        if response.status_code == 200:
+            data = response.json()
+            latest_version:str = data['tag_name']
+            latest_version = latest_version[1:]
+            return latest_version
+        else:
+            Bot.show_error_box('Cannot check latest version!\nBot will continue with current version.')
+            return local_version
 
     @staticmethod
     def bot_exit():
