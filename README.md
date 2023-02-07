@@ -1,6 +1,6 @@
-# Monster Strike Bot v2.1
+# Monster Strike Bot v2.2
 
-This script perform action only by ratio in the game. It won't read or write any game data.
+This script is designed to automate actions in Monster Strike, but it does not interact with the game's data in any way. It operates solely by performing actions based on ratios.
 
 # Table of Contents
   - [Getting started](#getting-started)
@@ -11,51 +11,54 @@ This script perform action only by ratio in the game. It won't read or write any
 
 1. [Download](https://github.com/WanDur/Monster-Strike-Bot/releases/) the release folder (vX.X)
 2. Run Launcher.exe
-3. NoxPlayer is recommended.
+3. NoxPlayer is the recommended emulator
 ## How To Use
 
-Please finish all steps in [Getting started](#getting-started) first.  
-1. Open NoxPlayer and enter the game main menu
-2. Press `ctrl + c` or close the program directly if you want to quit
+Before proceeding, make sure you have completed all steps in [Getting started](#getting-started).  
+1. Open NoxPlayer and enter the game's main menu.
+2. Press `ctrl + c` to quit the program, or close it directly.
 
 ## Versions
+- 2.2
+  - Code optimization
+  - Small fixes
 - 2.1
-  - small fixes
-  - new error handling
+  - Small fixes
+  - Improved error handling
 - 2.0
-  - added new launcher
-  - python files are packed into .exe, it can be downloaded in release
+  - Added a new launcher
+  - Python files are packed into an .exe file and can be downloaded from the release section
 - 1.9
   - 1.9.2
-    - small fixes
+    - Small fixes
   - 1.9.1
-    - small fixes
-    - added one more click while returning to menu
+    - Small fixes
+    - Added another click when returning to the menu
   - 1.9.0
-    - 自動使用進階捷徑
+    - Automatically uses advanced shortcuts
 - 1.8
-  - added new launch mode and modified the launcher
+  - Added a new launch mode and modified the launcher
 - 1.7
-  - check update automatically (new libraries required)
+  - Automatically checks for updates (new libraries required)
 - 1.6
-  - show total time spent
-  - shoot faster
+  - Shows total time spent
+  - Faster shooting
 - 1.5
-  - created function that can run remaining code once the lag is finished
-  - added card.png for the new function
+  - Created a function to run the remaining code once the lag is finished
+  - Added card.png for the new function
 - 1.4
-  - updated for ver. 25.0
-  - 使用進階捷徑
+  - Updated for ver. 25.0
+  - Uses advanced shortcuts
 - 1.3
-  - added more shooting angles
-  - all shoots start from the middle
-  - record time
-  - auto detect window size and position (removed WindowSizeChecker.exe)
-  - more precise clicks
+  - Added more shooting angles
+  - All shoots start from the middle
+  - Records time
+  - Automatically detects window size and position (WindowSizeChecker.exe removed)
+  - Faster shooting
 - 1.2
   -  shoot faster
 - 1.1
-  - 增加長按返回上一次冒險的功能
-  - added support to two more resolutions
+  - Added a long press feature to return to the last battle
+  - Added support for two more resolutions
 - 1.0
-  - initial release (自動打訓練)
+  - Initial release
