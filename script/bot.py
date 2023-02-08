@@ -1,7 +1,7 @@
 from random import randint
 from pyautogui import moveTo, dragTo, click, locateOnScreen
 from win32gui import GetWindowRect, EnumWindows, GetWindowText
-from time import sleep, time
+from time import sleep
 import pywinauto
 import requests
 import sys
@@ -175,19 +175,21 @@ class Bot:
             return True
 
     
-    def waitandclick(self, timeout=12):
+    def waitandclick(self):
         '''
         There can be a lag before selecting friend's monster.
         This function can run the remaining code once the lag is finished.
         '''
-        start_time = time()
-        while time() - start_time < timeout:
+        i = 0
+        while 1:
+            i += 1
             if self.found_image('card', c=0.95):
                 self.clicker('selectmonster')
                 self.clicker('startbattle')
                 break
-        print('Timed out: The bot will start again.')
-        return False
+            if i > 50:
+                print('Something is wrong! The bot will start again.')
+                return False
     
     @staticmethod
     def check_update(local_version:str):
