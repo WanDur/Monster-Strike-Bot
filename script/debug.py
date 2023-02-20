@@ -4,7 +4,7 @@ from os import system, path, remove
 from threading import Thread
 import logging
 
-VERSION = '2.2'
+VERSION = '2.3'
 
 if path.isfile('debug.log'):
     remove('debug.log')

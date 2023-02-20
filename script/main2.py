@@ -3,7 +3,7 @@ from time import sleep, time
 from os import system
 from threading import Thread
 
-VERSION = '2.2'
+VERSION = '2.3'
 
 def main():
     '''
