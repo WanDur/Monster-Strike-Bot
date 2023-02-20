@@ -1,4 +1,4 @@
-# Monster Strike Bot v2.2
+# Monster Strike Bot v2.3
 
 This script is designed to automate actions in Monster Strike, but it does not interact with the game's data in any way. It operates solely by performing actions based on ratios.
 
@@ -19,6 +19,8 @@ Before proceeding, make sure you have completed all steps in [Getting started](#
 2. Press `ctrl + c` to quit the program, or close it directly.
 
 ## Versions
+- 2.3
+  - Added `logging` for debug mode
 - 2.2
   - Code optimization
   - Small fixes
