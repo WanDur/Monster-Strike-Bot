@@ -11,7 +11,7 @@ This script is designed to automate actions in Monster Strike, but it does not i
 
 1. [Download](https://github.com/WanDur/Monster-Strike-Bot/releases/) the release folder (vX.X)
 2. Run Launcher.exe
-3. NoxPlayer is the recommended emulator
+3. NoxPlayer is recommended
 ## How To Use
 
 Before proceeding, make sure you have completed all steps in [Getting started](#getting-started).  
