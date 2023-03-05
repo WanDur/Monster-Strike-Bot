@@ -29,7 +29,10 @@ Before proceeding, make sure you have completed all steps in [Getting started](#
   - Improved error handling
 - 2.0
   - Added a new launcher
-  - Python files are packed into an .exe file and can be downloaded from the release section
+  - Python files are packed into an .exe file and can be downloaded from the release section  
+  
+<details><summary>1.X</summary>
+
 - 1.9
   - 1.9.2
     - Small fixes
@@ -64,3 +67,4 @@ Before proceeding, make sure you have completed all steps in [Getting started](#
   - Added support for two more resolutions
 - 1.0
   - Initial release
+</details>
