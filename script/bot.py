@@ -7,24 +7,27 @@ import requests
 import sys
 import ctypes
 
+
 def callback(hwnd, extra):
     rect = GetWindowRect(hwnd)
     x = rect[0]
     y = rect[1]
     w = rect[2] - x
     h = rect[3] - y
-    
+
     global window_stat
     # change the name of your emulator here
-    if GetWindowText(hwnd) == '夜神模擬器' or GetWindowText(hwnd) == 'NoxPlayer':  
+    if GetWindowText(hwnd) == '夜神模擬器' or GetWindowText(hwnd) == 'NoxPlayer':
         window_stat = (x, y, w, h)
 
+
 EnumWindows(callback, None)
+
 
 class Bot:
     def __init__(self):
         # initialize
-        try: 
+        try:
             window_stat
         except:
             Bot.show_error_box("Emulator not found.")
@@ -35,8 +38,8 @@ class Bot:
         self.height = window_stat[3]
 
         # menu ratio
-        self.middleX       = 0.45702
-        self.mainmenuY     = 0.79737
+        self.middleX = 0.45702
+        self.mainmenuY = 0.79737
         self.threesubmenuX = 0.23659
         self.threesubmenuY = 0.63054
         self.trainingMenuY = 0.46673
@@ -44,33 +47,42 @@ class Bot:
         self.selecttrainBY = 0.46972
         self.singleplayerX = 0.24165
         self.singleplayerY = 0.52870
-        self.selectMonstY  = 0.77319
-        self.startBattleY  = 0.69206
-        self.okButtonX     = 0.44864
-        self.okButtonAY    = 0.65455
-        self.okButtonBY    = 0.83179
-        self.okButtonCY    = 0.60866
-        self.okButtonDY    = 0.80645
-        self.okButtonEY    = 0.71197
-        self.bottommenuX   = 0.07945
-        self.bottommenuY   = 0.94682
-        self.shortcutY     = 0.74742
-        self.setshortcutX  = 0.44474
-        self.setshortcutY  = 0.70000
-        self.shortcutbtnX  = 0.12329
-        self.shortcutbtnY  = 0.56452
+        self.selectMonstY = 0.77319
+        self.startBattleY = 0.69206
+        self.okButtonX = 0.44864
+        self.okButtonAY = 0.65455
+        self.okButtonBY = 0.83179
+        self.okButtonCY = 0.60866
+        self.okButtonDY = 0.80645
+        self.okButtonEY = 0.71197
+        self.bottommenuX = 0.07945
+        self.bottommenuY = 0.94682
+        self.shortcutY = 0.74742
+        self.setshortcutX = 0.44474
+        self.setshortcutY = 0.70000
+        self.shortcutbtnX = 0.12329
+        self.shortcutbtnY = 0.56452
 
         # shoot reference position
-        self.middle = (self.dx + self.width * 0.47384, self.dy + self.height * 0.50636)
-        self.a1 = (self.dx + self.width * 0.37209, self.dy + self.height * 0.24335)
-        self.a2 = (self.dx + self.width * 0.32267, self.dy + self.height * 0.41907)
-        self.a3 = (self.dx + self.width * 0.66957, self.dy + self.height * 0.41907)
-        self.a4 = (self.dx + self.width * 0.77519, self.dy + self.height * 0.45260)
-        self.a5 = (self.dx + self.width * 0.07946, self.dy + self.height * 0.56878)
-        self.a6 = (self.dx + self.width * 0.30233, self.dy + self.height * 0.62254)
-        self.a7 = (self.dx + self.width * 0.66957, self.dy + self.height * 0.62254)
+        self.middle = (self.dx + self.width * 0.47384,
+                       self.dy + self.height * 0.50636)
+        self.a1 = (self.dx + self.width * 0.37209,
+                   self.dy + self.height * 0.24335)
+        self.a2 = (self.dx + self.width * 0.32267,
+                   self.dy + self.height * 0.41907)
+        self.a3 = (self.dx + self.width * 0.66957,
+                   self.dy + self.height * 0.41907)
+        self.a4 = (self.dx + self.width * 0.77519,
+                   self.dy + self.height * 0.45260)
+        self.a5 = (self.dx + self.width * 0.07946,
+                   self.dy + self.height * 0.56878)
+        self.a6 = (self.dx + self.width * 0.30233,
+                   self.dy + self.height * 0.62254)
+        self.a7 = (self.dx + self.width * 0.66957,
+                   self.dy + self.height * 0.62254)
 
-        self.posList = [self.a1, self.a2, self.a3, self.a4, self.a5, self.a6, self.a7]
+        self.posList = [self.a1, self.a2, self.a3,
+                        self.a4, self.a5, self.a6, self.a7]
 
     def shoot(self):
         '''
@@ -93,9 +105,11 @@ class Bot:
             return (self.dx + self.width * x, self.dy + self.height * y)
 
         def click_pywinauto(x: float, y: float):
-            pywinauto.mouse.press(button='left', coords=(int(self.dx + self.width * x), int(self.dy + self.height * y)))
-            pywinauto.mouse.release(button='left', coords=(int(self.dx + self.width * x), int(self.dy + self.height * y)))
-            return  
+            pywinauto.mouse.press(button='left', coords=(
+                int(self.dx + self.width * x), int(self.dy + self.height * y)))
+            pywinauto.mouse.release(button='left', coords=(
+                int(self.dx + self.width * x), int(self.dy + self.height * y)))
+            return
 
         match option:
             case 'mainmenu':
@@ -106,7 +120,7 @@ class Bot:
                 moveTo(pos_cal(self.threesubmenuX, self.threesubmenuY))
                 click()
                 sleep(.6)
-            case 'trainingmenu':
+            case 'AllTrainList':
                 moveTo(pos_cal(self.middleX, self.trainingMenuY))
                 click()
                 sleep(1.5)
@@ -174,7 +188,6 @@ class Bot:
         if((_img1 is not None) or (_img2 is not None)):
             return True
 
-    
     def waitandclick(self):
         '''
         There can be a lag before selecting friend's monster.
@@ -190,18 +203,19 @@ class Bot:
             if i > 50:
                 print('Something is wrong! The bot will start again.')
                 return False
-    
+
     @staticmethod
-    def check_update(local_version:str):
+    def check_update(local_version: str):
         url = 'https://api.github.com/repos/WanDur/Monster-Strike-Bot/releases/latest'
         response = requests.get(url)
         if response.status_code == 200:
             data = response.json()
-            latest_version:str = data['tag_name']
+            latest_version: str = data['tag_name']
             latest_version = latest_version[1:]
             return latest_version
         else:
-            Bot.show_error_box('Cannot check latest version!\nBot will continue with current version.')
+            Bot.show_error_box(
+                'Cannot check latest version!\nBot will continue with current version.')
             return local_version
 
     @staticmethod
@@ -209,9 +223,9 @@ class Bot:
         sys.exit(0)
 
     @staticmethod
-    def sysio_print(text:str):
+    def sysio_print(text: str):
         sys.stdout.write(text)
 
     @staticmethod
-    def show_error_box(text:str):
+    def show_error_box(text: str):
         ctypes.windll.user32.MessageBoxW(0, text, "", 0x10)
