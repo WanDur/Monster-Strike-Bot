@@ -29,8 +29,8 @@ def main():
         ms_bot.clicker('mainmenu')
         ms_bot.clicker('threesubmenu')
         ms_bot.clicker('AllTrainList')
-        ms_bot.clicker('selectbigtrain')
-        ms_bot.clicker('selectsmalltrain')
+        ms_bot.clicker('ExtendTrain')
+        ms_bot.clicker('PressExtendedTrain')
         ms_bot.clicker('singleplayer')
         error = ms_bot.waitandclick()
         if error == False:

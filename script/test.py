@@ -5,7 +5,7 @@ from os import system
 while 1:
     ms_bot_test = Bot()
 
-    if ms_bot_test.found_image('level'):
+    if ms_bot_test.found_image('ok'):
         print('Game found')
         print('Script is ready to run!')
         sleep(2)

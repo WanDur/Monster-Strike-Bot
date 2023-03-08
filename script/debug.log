@@ -1,0 +1,2 @@
+2023-03-07 22:59:33 DEBUG: Starting new HTTPS connection (1): api.github.com:443
+2023-03-07 22:59:34 DEBUG: https://api.github.com:443 "GET /repos/WanDur/Monster-Strike-Bot/releases/latest HTTP/1.1" 200 809

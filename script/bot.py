@@ -37,6 +37,8 @@ class Bot:
         self.width = window_stat[2]
         self.height = window_stat[3]
 
+        print(self.width, self.height)
+
         # menu ratio
         self.middleX = 0.45702
         self.mainmenuY = 0.79737
@@ -124,11 +126,11 @@ class Bot:
                 moveTo(pos_cal(self.middleX, self.trainingMenuY))
                 click()
                 sleep(1.5)
-            case 'selectbigtrain':
+            case 'ExtendTrain':
                 moveTo(pos_cal(self.middleX, self.selecttrainAY))
                 click()
                 sleep(.5)
-            case 'selectsmalltrain':
+            case 'PressExtendedTrain':
                 moveTo(pos_cal(self.middleX, self.selecttrainBY))
                 click()
                 sleep(.5)
@@ -155,9 +157,6 @@ class Bot:
 
                 moveTo(pos_cal(self.okButtonX, self.okButtonEY))
                 click_pywinauto(self.okButtonX, self.okButtonEY)
-            case 'okBtnD':
-                moveTo(pos_cal(self.okButtonX, self.okButtonDY))
-                click_pywinauto(self.okButtonX, self.okButtonDY)
             case 'bottommainmenu':
                 moveTo(pos_cal(self.bottommenuX, self.bottommenuY))
                 click()
@@ -175,7 +174,9 @@ class Bot:
                 moveTo(pos_cal(self.shortcutbtnX, self.shortcutbtnY))
                 click()
                 sleep(.2)
-                self.clicker('okBtnD')
+
+                moveTo(pos_cal(self.okButtonX, self.okButtonDY))
+                click_pywinauto(self.okButtonX, self.okButtonDY)
 
     def found_image(self, image: str, c=0.8) -> bool:
         '''
