@@ -1,0 +1,8 @@
+2023-03-12 18:40:09 DEBUG: Starting new HTTPS connection (1): api.github.com:443
+2023-03-12 18:40:09 DEBUG: https://api.github.com:443 "GET /repos/WanDur/Monster-Strike-Bot/releases/latest HTTP/1.1" 200 808
+2023-03-12 18:40:14 INFO: Battle 1 just started.
+2023-03-12 18:40:25 INFO: Playing battle 1.
+2023-03-12 18:42:08 INFO: Battle 1 ended, in result page.
+2023-03-12 18:42:25 INFO: Battle 1 ended, returned to menu.
+
+2023-03-12 18:42:28 INFO: Battle 2 just started.

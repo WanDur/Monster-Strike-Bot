@@ -1,9 +1,20 @@
 from bot import Bot
 from time import sleep, time
-from os import system
+from os import system, path, remove
 from threading import Thread
+import logging
 
-VERSION = '2.3'
+VERSION = '2.4'
+
+if path.isfile('msbot.log'):
+    remove('msbot.log')
+
+logging.basicConfig(
+    filename='msbot.log',
+    level=logging.DEBUG,
+    format='%(asctime)s %(levelname)s: %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
 
 
 def main():
@@ -12,6 +23,8 @@ def main():
     '''
     main.counter += 1
     InBattle = InResultPage = False
+
+    logging.info(f'Battle {main.counter} just started.')
 
     def convert(seconds):
         '''
@@ -34,6 +47,8 @@ def main():
         ms_bot.clicker('singleplayer')
         error = ms_bot.waitandclick()
         if error == False:
+            logging.info(
+                f'Error handling: rerun the bot. <Battle {main.counter} cannot be started.>')
             main.counter -= 1
             sleep(2)
             ms_bot.clicker('bottommainmenu')
@@ -45,6 +60,8 @@ def main():
         ms_bot.clicker('shortcut')
         error = ms_bot.waitandclick()
         if error == False:
+            logging.error(
+                f'Error handling: reran the bot. <Battle {main.counter} cannot be started>')
             main.counter -= 1
             sleep(2)
             ms_bot.clicker('bottommainmenu')
@@ -52,6 +69,7 @@ def main():
 
     skipped_menu_control() if main.counter >= 2 else full_menu_control()
 
+    logging.info(f'Playing battle {main.counter}.')
     print("Battle started   打緊. . .")
 
     InBattle = True
@@ -62,6 +80,7 @@ def main():
             InResultPage = True
             ms_bot.clicker('startBtn')
 
+    logging.info(f'Battle {main.counter} ended, in result page.')
     print("In result page   結算中. . .")
 
     while InResultPage:
@@ -71,6 +90,8 @@ def main():
             InResultPage = False
             system('cls')
             end = time()
+
+            logging.info(f'Battle {main.counter} ended, returned to menu.\n')
             ms_bot.clicker('bottommainmenu')
 
             print(
@@ -113,6 +134,8 @@ def fetch_version_and_check():
     if latest_version == VERSION:
         print(f"Bot ----- v{VERSION}")
     else:
+        logging.error(
+            f'Error handling: closed the bot. <Game version not match>')
         ms_bot.show_error_box(
             f'Your version is v{VERSION}, v{ms_bot.check_update(VERSION)} is available!\nPlease update the bot.\n')
         ms_bot.bot_exit()
@@ -125,6 +148,7 @@ sleep(3)
 
 if ms_bot.found_image('level') != True:
     system('cls')
+    logging.error(f'Error handling: closed the bot. <Game screen not found>')
     ms_bot.show_error_box(
         'The game is not found on the screen or it is in wrong size!')
     ms_bot.bot_exit()

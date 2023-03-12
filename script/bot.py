@@ -37,8 +37,6 @@ class Bot:
         self.width = window_stat[2]
         self.height = window_stat[3]
 
-        print(self.width, self.height)
-
         # menu ratio
         self.middleX = 0.45702
         self.mainmenuY = 0.79737
@@ -92,7 +90,7 @@ class Bot:
 
         every shoot last for 1.9 seconds
         '''
-        finalPos = self.posList[randint(0, len(self.posList) - 1)]
+        finalPos = self.posList[randint(0, 6)]
         moveTo(self.middle)
         sleep(.2)
         dragTo(finalPos, duration=0.1)
@@ -183,8 +181,8 @@ class Bot:
         return True if image is found
         :param image: image name
         '''
-        _img1 = locateOnScreen(f"img\{image}_326x566.png", confidence=c)
-        _img2 = locateOnScreen(f"img\{image}_452x782.png", confidence=c)
+        _img1 = locateOnScreen(f"src\{image}_326x566.png", confidence=c)
+        _img2 = locateOnScreen(f"src\{image}_452x782.png", confidence=c)
 
         if((_img1 is not None) or (_img2 is not None)):
             return True
