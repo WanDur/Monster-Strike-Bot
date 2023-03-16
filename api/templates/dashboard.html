@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Bot Dashboard Panel</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="static/boardstyle.css" />
+    <script type="text/javascript" src="static/dashboard.js" defer></script>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+</head>
+
+<body>
+    <section class="dashboard">
+        <div class="dash-content">
+            <div class="overview">
+                <div class="title">
+                    <span class="text">Bot dashboard</span>
+                    <p id="uid-display">xxxxxxxx</p>
+                </div>
+
+                <div class="boxes">
+                    <div class="box box1">
+                        <i class="material-symbols-outlined">analytics</i>
+                        <span class="text">Total matches</span>
+                        <span class="number" id="match-label">0</span>
+                    </div>
+                    <div class="box box2">
+                        <i class="material-symbols-outlined">schedule</i>
+                        <span class="text">Runtime</span>
+                        <span class="number" id="runtime-label">00:00:00</span>
+                    </div>
+                    <div class="box box3">
+                        <i class="material-symbols-outlined" id="info-icon">done_all</i>
+                        <span class="text" id="info-text">Info</span>
+                        <span class="number" id="info-label">> All good</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="activity">
+                <div class="title">
+                    <span class="text">Recent Activity</span>
+                </div>
+
+                <div class="color-hint">
+                    <span class="hint hint1">INFO</span>
+                    <span class="hint hint2">WARNING</span>
+                    <span class="hint hint3">ERROR</span>
+                </div>
+
+                <div class="activity-data">
+                    <div class="data status"></div>
+                    <div class="data info"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+
+</html>

@@ -1,0 +1,137 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600&display=swap");
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    margin: 5% 2% 0 2%;
+}
+
+.opt-card {
+    text-align: center;
+    background-color: white;
+    border-radius: 20px;
+    padding: 3rem;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+}
+
+.opt-card-inputs {
+    margin: 10px 0;
+    display: grid;
+    gap: 15px;
+    justify-content: center;
+    grid-template-columns: repeat(5, auto);
+}
+
+.opt-card-inputs input {
+    width: 48px;
+    height: 54px;
+    font-size: 28px;
+    text-align: center;
+    border-radius: 6px;
+    border: 1px solid #bbbbbb;
+}
+
+.opt-card-inputs input:focus {
+    outline: 2px solid #3a64da;
+    border-color: transparent;
+}
+
+.modal-wrapper {
+    padding: 30px;
+    cursor: default;
+}
+
+.modal-box {
+    opacity: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 5%;
+    max-width: 400px;
+    width: 100%;
+    border-radius: 20px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    padding: 30px 20px;
+
+    transition: transform 0.4s ease, opacity 0.4s ease;
+    transform: translateY(20%);
+}
+
+.modal-box-show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+#modal-icon {
+    font-size: 60px;
+    color: #3a64da;
+}
+
+#close-modal-icon {
+    color: #1a41ac;
+    font-size: 30px;
+    margin-right: 0px;
+    margin-left: auto;
+    cursor: pointer;
+}
+
+.modal-box h2 {
+    margin-top: 15px;
+    font-size: 24px;
+    font-weight: 500;
+}
+
+.modal-box h3 {
+    font-size: 16px;
+    font-weight: 400;
+    text-align: center;
+}
+
+@media (max-width: 450px) {
+    .opt-card {
+        width: 85%;
+    }
+
+    .opt-card h1 {
+        font-size: 26px;
+    }
+
+    .modal-wrapper {
+        width: 85%;
+    }
+
+    .modal-box {
+        margin-top: 5%;
+        padding: 15px 10px;
+    }
+
+    #modal-icon {
+        font-size: 45px;
+    }
+
+    #close-modal-icon {
+        font-size: 23px;
+    }
+
+    .modal-box h2 {
+        margin-top: 10px;
+        font-size: 20px;
+    }
+
+    .modal-box h3 {
+        font-size: 14px;
+    }
+
+    .page-title {
+        font-size: 24px;
+    }
+}

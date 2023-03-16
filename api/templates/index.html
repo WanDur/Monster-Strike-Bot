@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>MS-Bot Dashboard</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="stylesheet" type="text/css" href="static/style.css" />
+        <script type="text/javascript" src="static/index.js" defer></script>
+        <link rel="preconnect" href="https://fonts.googleap is.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap" rel="stylesheet" />
+        <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0"
+        />
+    </head>
+
+    <body>
+        <div class="opt-card">
+            <h1>Dashboard</h1>
+            <p>Enter your <a href="#" id="how-uid">uid</a></p>
+            <div class="opt-card-inputs">
+                <input type="text" maxlength="1" autofocus />
+                <input type="text" maxlength="1" />
+                <input type="text" maxlength="1" />
+                <input type="text" maxlength="1" />
+                <input type="text" maxlength="1" />
+            </div>
+        </div>
+
+        <div class="modal-wrapper">
+            <div class="modal-box">
+                <i class="material-symbols-outlined" id="close-modal-icon">close</i>
+                <i class="material-symbols-outlined" id="modal-icon">pin</i>
+                <h2 id="modal-header">Enter your user id</h2>
+                <h3 id="modal-text">
+                    The uid is printed on the terminal every time you run the bot. Rerun the bot if you didn't mark it
+                    down.
+                </h3>
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Error Page</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: "Poppins", sans-serif;
+            }
+
+            #container {
+                position: absolute;
+                display: flex;
+                width: 100%;
+                height: 100%;
+                justify-content: center;
+                align-items: center;
+                background: linear-gradient(30deg, #141e30, #243b55, #141e30);
+            }
+
+            #container .content {
+                max-width: 600px;
+                text-align: center;
+            }
+
+            #container .content h2 {
+                margin-top: -100px;
+                font-size: 16vw;
+                color: #eaeaea;
+                line-height: 1em;
+            }
+
+            #container .content h4 {
+                font-size: 1.6rem;
+                position: relative;
+                color: #eaeaea;
+                margin-bottom: 20px;
+            }
+
+            #container .content p {
+                color: #eaeaea;
+                font-size: 1.4em;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="container">
+            <div class="content">
+                <h2>{{ error[0].split(' ')[0] }}</h2>
+                <h4>Oops! Something went wrong.</h4>
+                <p>{{ error[1] }}</p>
+            </div>
+        </div>
+    </body>
+</html>
