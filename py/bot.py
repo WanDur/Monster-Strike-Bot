@@ -181,8 +181,8 @@ class Bot:
         return True if image is found
         :param image: image name
         '''
-        _img1 = locateOnScreen(fr"py\resources\{image}_326x566.png", confidence=c)
-        _img2 = locateOnScreen(fr"py\resources\{image}_452x782.png", confidence=c)
+        _img1 = locateOnScreen(f"resources\{image}_326x566.png", confidence=c)
+        _img2 = locateOnScreen(f"resources\{image}_452x782.png", confidence=c)
 
         if((_img1 is not None) or (_img2 is not None)):
             return True
