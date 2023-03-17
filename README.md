@@ -1,4 +1,4 @@
-# Monster Strike Bot v2.5
+# Monster Strike Bot v3.0
 
 This script is designed to automate actions in Monster Strike, but it does not interact with the game's data in any way. It operates solely by performing actions based on ratios.
 
@@ -10,18 +10,26 @@ This script is designed to automate actions in Monster Strike, but it does not i
 ## Getting started
 
 1. [Download](https://github.com/WanDur/Monster-Strike-Bot/releases/) the release folder (vX.X)
-2. Run Launcher.exe
-3. NoxPlayer is recommended
+2. Run MSBot.exe
+3. NoxPlayer is recommended (change the source code for other emulators)
 ## How To Use
 
 Before proceeding, make sure you have completed all steps in [Getting started](#getting-started).  
 1. Open NoxPlayer and enter the game's main menu.
-2. Press `ctrl + c` to quit the program, or close it directly.
+2. Move your mouse to any corner of the screen to stop the bot, or simply close it.
+3. You can now check your bot status remotely at [here](https://msbot.pythonanywhere.com).
+4. The UID is printed on the terminal every time you run the bot.
 
 ## Versions
+- 3.0
+  - Rewrote the bot in c++ for overall improvement
+  - Created custom API to check bot status
+
+<details><summary>2.X</summary>
+
 - 2.5
   - Minor fixes
-  - This is also the last version of python written bot
+  - Last version of python written bot
 - 2.4
   - Logging is enabled by default
   - Cleaned up the directory
@@ -36,6 +44,7 @@ Before proceeding, make sure you have completed all steps in [Getting started](#
 - 2.0
   - Added a new launcher
   - Python files are packed into an .exe file and can be downloaded from the release section  
+</details>
   
 <details><summary>1.X</summary>
 
