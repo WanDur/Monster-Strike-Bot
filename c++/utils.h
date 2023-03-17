@@ -33,7 +33,7 @@ bool foundImage(std::string image, Point& imgCoord, double c = 0.8);
 
 int GetTimeNow();
 
-std::string convertTimeToString(int seconds);
+std::string convertTimeToString(int seconds, bool showAll = true);
 
 void show_error_box(const wchar_t* text);
 

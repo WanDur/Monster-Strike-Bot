@@ -1,7 +1,7 @@
 ﻿#include "main.h"
 #include "Bot.h"
 
-constexpr double VERSION = 2.4;
+constexpr double VERSION = 3.0;
 
 Point emptyPoint{ 0,0 };
 
@@ -69,7 +69,7 @@ int main()
 
     int start = GetTimeNow();
 
-    PLOG_INFO.printf("Your UID: %s\nCheck your bot on https://msbot.pythonanywhere.com/\n", ms_bot.UID);
+    PLOG_INFO.printf("Your UID: %s\nCheck the bot on https://msbot.pythonanywhere.com\n", ms_bot.UID);
     POST(counter, log_info(ms_bot.MS_INFO, "", counter), ms_bot.UID, true);
 
     std::thread failSafeThread(checkFailSafe, 3, ms_bot);
@@ -77,6 +77,7 @@ int main()
 
     while (1)
     {
+        int everyStart = GetTimeNow();
         counter++;
         bool inBattle = false, inResultPage = false;
 
@@ -147,7 +148,9 @@ int main()
 
                 PLOG_INFO.printf("Played: %d", counter);
                 PLOG_INFO.printf("Total time: %s", convertTimeToString(end - start));
-                PLOG_INFO.printf("Average: %s", convertTimeToString(static_cast<int>(round((end - start) / counter))));
+                PLOG_INFO.printf("Average: %s", convertTimeToString(static_cast<int>(round((end - start) / counter)), false));
+
+                POST(counter, log_info(ms_bot.MS_INFO, convertTimeToString(end - everyStart, false), counter), ms_bot.UID);
             }
         }
     }

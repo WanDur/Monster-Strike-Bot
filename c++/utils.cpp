@@ -166,7 +166,7 @@ int GetTimeNow()
     return static_cast<int>(static_cast<std::chrono::seconds>(now_time_t).count());
 }
 
-std::string convertTimeToString(int seconds)
+std::string convertTimeToString(int seconds, bool showAll)
 {
     seconds = seconds % (24 * 3600);
     int hour = seconds / 3600;
@@ -175,8 +175,16 @@ std::string convertTimeToString(int seconds)
     seconds %= 60;
 
     std::stringstream ss;
-    ss << hour << ":" << std::setfill('0') << std::setw(2) << minutes << ":" << std::setw(2) << seconds;
-    return ss.str();
+    if (showAll)
+    {
+        ss << hour << ":" << std::setfill('0') << std::setw(2) << minutes << ":" << std::setw(2) << seconds;
+        return ss.str();
+    }
+    else
+    {
+        ss << std::setfill('0') << std::setw(2) << minutes << ":" << std::setw(2) << seconds << "s";
+        return ss.str();
+    }
 }
 
 void show_error_box(const wchar_t* text) 

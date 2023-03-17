@@ -64,8 +64,8 @@ const FetchActivityAndUpdate = (userID: string) => {
 const UpdateMatchCountLabel = (userID: string) => {
     FetchApiData().then((data) => {
         try {
-            const count: number = data[userID].count
-            match_count_label.innerText = count.toString()
+            const count: string = data[userID].count
+            if (count != "0") match_count_label.innerText = count.toString()
         } catch (error) {
             console.error("Failed to update count label:", error)
         } finally {
@@ -206,12 +206,7 @@ const FormatDate = (dateString: string): string => {
     return `${months[month - 1]}-${day}`
 }
 
-/**
- * Check if the current activity is the same as the previous one stored in local storage
- * @param log - current activity log
- * @returns True if the current activity is the same as the previous activity, false otherwise
- */
-const IsActivitySame = (log: string): boolean => {
+const IsActivitySame = (log: string) => {
     return JSON.stringify(log) == localStorage.getItem("prevActivity")
 }
 
