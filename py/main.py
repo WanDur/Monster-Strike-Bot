@@ -1,10 +1,9 @@
 from bot import Bot
 from time import sleep, time
 from os import system, path, remove
-from threading import Thread
 import logging
 
-VERSION = '2.4'
+VERSION = '2.5'
 
 if path.isfile('msbot.log'):
     remove('msbot.log')
@@ -103,42 +102,18 @@ def main():
 
 
 ms_bot = Bot()
-
+print("------- THIS IS WRITTEN IN PYTHON, C++ VERSION IS AVAILABLE -------\n")
 # fetching data
 
 
 def fetch_version_and_check():
-    done = False
-
-    def loading():
-        while done == False:
-            if done:
-                break
-            ms_bot.sysio_print('\rChecking version |')
-            sleep(0.1)
-            ms_bot.sysio_print('\rChecking version /')
-            sleep(0.1)
-            ms_bot.sysio_print('\rChecking version -')
-            sleep(0.1)
-            ms_bot.sysio_print('\rChecking version \\')
-            sleep(0.1)
-        system('cls')
-        ms_bot.sysio_print('\rDone fetching!\n\n')
-
-    t_load = Thread(target=loading)
-    t_load.start()
     latest_version = ms_bot.check_update(VERSION)
-    done = True
-    sleep(1.5)
 
     if latest_version == VERSION:
         print(f"Bot ----- v{VERSION}")
     else:
-        logging.error(
-            f'Error handling: closed the bot. <Game version not match>')
-        ms_bot.show_error_box(
-            f'Your version is v{VERSION}, v{ms_bot.check_update(VERSION)} is available!\nPlease update the bot.\n')
-        ms_bot.bot_exit()
+        logging.error('Game version not match')
+        print(f'Your version is v{VERSION}, v{ms_bot.check_update(VERSION)} is available!')
 
 
 fetch_version_and_check()
