@@ -1,5 +1,4 @@
 ﻿#include "main.h"
-#include "Bot.h"
 
 constexpr double VERSION = 3.0;
 

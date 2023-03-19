@@ -12,3 +12,4 @@
 #include "utils.h"
 #include "CustomPlog.h"
 #include "BotChecks.h"
+#include "Bot.h"

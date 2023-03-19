@@ -17,9 +17,7 @@ localStorage.removeItem("prevActivity")
 
 // State
 let match_prevValue = match_count_label.innerText
-
-// debug
-const isDebug = false
+let isBotStopped = false
 
 /**
  * Fetch data from ms_bot api
@@ -62,16 +60,22 @@ const FetchActivityAndUpdate = (userID: string) => {
  * @param {string} userID - The user ID for which to fetch match count data
  */
 const UpdateMatchCountLabel = (userID: string) => {
-    FetchApiData().then((data) => {
-        try {
-            const count: string = data[userID].count
-            if (count != "0") match_count_label.innerText = count.toString()
-        } catch (error) {
-            console.error("Failed to update count label:", error)
-        } finally {
-            UpdateMatchStorage()
-        }
-    })
+    if (!isBotStopped) {
+        FetchApiData().then((data) => {
+            try {
+                const count: string = data[userID].count
+                if (count == "0") {
+                    isBotStopped = true
+                } else {
+                    match_count_label.innerText = count.toString()
+                }
+            } catch (error) {
+                console.error("Failed to update count label:", error)
+            } finally {
+                UpdateMatchStorage()
+            }
+        })
+    }
 }
 
 /**
@@ -134,8 +138,8 @@ const UpdateMatchStorage = () => {
  * Update the info box HTML elements with the specified values and updates the local storage with the new data
  *
  * @param {string} icon - The icon in the info box
- * @param {string} text - The text in the info box
- * @param {string} label - The label in the info box
+ * @param {string} text - The middle text in the info box
+ * @param {string} label - The clickable in the info box
  */
 const UpdateInfoDisplay = (icon: string, text: string, label: string) => {
     info_icon.innerText = icon
@@ -274,21 +278,27 @@ Check your bot!`)
 Try refreshing the page and enter the uid again.`)
     } else if (info_icon.innerText == "done_all") {
         alert(`Your bot runs well!`)
+    } else if (info_icon.innerText == "block") {
+        alert(`It may occur if your mouse is moved to the corner of the screen.`)
     }
 })
 
 if (uid) {
     const firstrun = parseInt(localStorage.getItem("initTime")!)
-    const monitor_time = isDebug ? 15000 : 200000
 
-    setInterval(() => {
-        UpdateTimeLabel(firstrun)
+    const UpdateTimeInterval = setInterval(() => {
+        if (!isBotStopped) {
+            UpdateTimeLabel(firstrun)
+        } else {
+            UpdateInfoDisplay("block", "Bot stopped!", "> Info")
+            clearInterval(UpdateTimeInterval)
+        }
     }, 1000)
 
     setInterval(() => {
         UpdateMatchCountLabel(uid)
         FetchActivityAndUpdate(uid)
-        MonitorUpdateTime(monitor_time)
+        MonitorUpdateTime(200000)
     }, 6000)
 }
 

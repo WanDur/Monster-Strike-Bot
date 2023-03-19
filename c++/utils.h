@@ -9,6 +9,8 @@
 
 #include <plog/Log.h>
 
+#include "globals.h"
+
 struct Point 
 {
     int x;
@@ -41,6 +43,6 @@ void adjustWindowSize(int newWidth, int newHeight);
 
 void confirmWindowSize();
 
-std::string generate_uid(int length = 5);
+std::string generate_uid(int length = 4);
 
 std::string log_info(std::string status, std::string message, int counter);

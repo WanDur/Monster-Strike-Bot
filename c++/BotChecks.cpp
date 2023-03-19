@@ -5,7 +5,7 @@ BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam)
     char window_title[256];
     GetWindowTextA(hwnd, window_title, 256);
 
-    if (strcmp(window_title, "夜神模擬器") == 0 || strcmp(window_title, "NoxPlayer") == 0)
+    if (strcmp(window_title, emulatorNameCHAR) == 0)
     {
         RECT window_rect;
         GetWindowRect(hwnd, &window_rect);
@@ -54,16 +54,17 @@ bool isVersionMatch(double currVersion)
 
 bool isResolutionSupported()
 {
-    const int kSupportedWidth = 1920;
-    const int kSupportedHeight = 1080;
-
     int my_width = GetSystemMetrics(SM_CXSCREEN);
     int my_height = GetSystemMetrics(SM_CYSCREEN);
 
-    if (my_width != kSupportedWidth || my_height != kSupportedHeight)
+    for (int i = 0; i < kSupportedSize; i++)
     {
-        PLOG_ERROR.printf("Your screen resolution is not supported");
-        return false;
+        if (my_width != kSupportedWidth[i] || my_height != kSupportedHeight[i])
+        {
+            PLOG_ERROR.printf("Your screen resolution is not supported");
+            return false;
+        }
     }
+
     return true;
 }

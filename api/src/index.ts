@@ -6,7 +6,8 @@ const info_modal_text = document.getElementById("modal-text")!
 const info_modal_header = document.getElementById("modal-header")!
 
 const default_icon = "pin"
-const default_text = `The uid is printed on the terminal every time you run the bot. Rerun the bot if you didn't mark it down :)`
+const default_text =
+    "The uid is printed on the terminal when you run the bot. Rerun the bot if you didn't mark it down."
 const default_header = "Enter your user id"
 
 // Input fields

@@ -194,14 +194,10 @@ void show_error_box(const wchar_t* text)
 
 void adjustWindowSize(int newWidth, int newHeight) 
 {
-    LPCWSTR eng_name = L"NoxPlayer";
-    LPCWSTR chi_name = L"夜神模擬器";
-
-    HWND hwnd = FindWindow(nullptr, eng_name);
-    if (hwnd == nullptr) hwnd = FindWindow(nullptr, chi_name);
-
+    HWND hwnd = FindWindow(nullptr, emulatorNameLPCWSTR);
     RECT rect;
     GetWindowRect(hwnd, &rect);
+
     if ((rect.right - rect.left) != 379 || (rect.bottom - rect.top) != 634)
     {
         SetWindowPos(hwnd, nullptr, rect.right - newWidth, rect.bottom - newHeight, newWidth, newHeight, SWP_NOZORDER);
