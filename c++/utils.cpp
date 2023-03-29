@@ -1,4 +1,7 @@
 ﻿#include "utils.h"
+#include "ScreenConfig.h"
+
+ScreenConfig& screenConfig = ScreenConfig::getInstance();
 
 int randint(int min, int max) 
 {
@@ -58,7 +61,20 @@ void doubleclick()
     click();
 }
 
-cv::Mat hwndToMat(HWND hwnd) 
+void fullSpamClick(int middleX, int fromY, int toY)
+{
+    int delta_y = toY - fromY;
+    double step_y = delta_y / (double)20;
+
+    for (int i = 0; i <= 20; i++)
+    {
+        moveTo(Point{ middleX, static_cast<int>(fromY + i * step_y) });
+        click();
+        Sleep(200);
+    }
+}
+
+cv::Mat hwndToMat(HWND hwnd)
 {
     HDC hwindowDC, hwindowCompatibleDC;
     int height, width, srcheight, srcwidth;
@@ -72,13 +88,13 @@ cv::Mat hwndToMat(HWND hwnd)
     SetStretchBltMode(hwindowCompatibleDC, COLORONCOLOR);
 
     // Get the area size of the desktop window (screenshot)
-    RECT windowsize;   
+    RECT windowsize;
     GetClientRect(hwnd, &windowsize);
 
     // Get the dimensions of the screenshot
     srcheight = windowsize.bottom;
     srcwidth = windowsize.right;
-    height = windowsize.bottom;  
+    height = windowsize.bottom;
     width = windowsize.right;
 
     // Create cv::Mat object to store the data
@@ -86,7 +102,7 @@ cv::Mat hwndToMat(HWND hwnd)
 
     // Create a bitmap
     hbwindow = CreateCompatibleBitmap(hwindowDC, width, height);
-    bi.biSize = sizeof(BITMAPINFOHEADER);   
+    bi.biSize = sizeof(BITMAPINFOHEADER);
     bi.biWidth = width;
     bi.biHeight = -height;
     bi.biPlanes = 1;
@@ -101,10 +117,10 @@ cv::Mat hwndToMat(HWND hwnd)
     // Select bitmap and copy the screenshot context
     // Store it in cv::Mat and clean up
     SelectObject(hwindowCompatibleDC, hbwindow);
-    StretchBlt(hwindowCompatibleDC, 0, 0, width, height, hwindowDC, 0, 0, srcwidth, srcheight, SRCCOPY); 
-    GetDIBits(hwindowCompatibleDC, hbwindow, 0, height, src.data, (BITMAPINFO*)&bi, DIB_RGB_COLORS);  
+    StretchBlt(hwindowCompatibleDC, 0, 0, width, height, hwindowDC, 0, 0, srcwidth, srcheight, SRCCOPY);
+    GetDIBits(hwindowCompatibleDC, hbwindow, 0, height, src.data, (BITMAPINFO*)&bi, DIB_RGB_COLORS);
     DeleteObject(hbwindow);
-    DeleteDC(hwindowCompatibleDC); 
+    DeleteDC(hwindowCompatibleDC);
     ReleaseDC(hwnd, hwindowDC);
 
     // Convert from BGRA to BGR for later comparison
@@ -115,24 +131,16 @@ cv::Mat hwndToMat(HWND hwnd)
 }
 
 
-bool isImageOnScreen(std::string imagePath, double confidence, cv::Point& imgCoord)
+bool isImageOnScreen(cv::Mat imageData, double confidence, cv::Point& imgCoord)
 {
     HWND hDesktopWnd;
     hDesktopWnd = GetDesktopWindow();
     cv::Mat screenshot = hwndToMat(hDesktopWnd);
 
-    cv::Mat image = cv::imread(imagePath);
-    cv::cvtColor(image, image, cv::COLOR_BGRA2BGR);
-
-    if (image.empty()) 
-    {
-        std::cout << "Error: Could not read image file " << imagePath << std::endl;
-        PLOG_ERROR.printf("Could not read %s", imagePath);
-        return false;
-    }
+    cv::cvtColor(imageData, imageData, cv::COLOR_BGRA2BGR);
 
     cv::Mat result;
-    cv::matchTemplate(screenshot, image, result, cv::TM_CCOEFF_NORMED);
+    cv::matchTemplate(screenshot, imageData, result, cv::TM_CCOEFF_NORMED);
 
     double maxVal;
     cv::Point maxLoc;
@@ -146,12 +154,15 @@ bool isImageOnScreen(std::string imagePath, double confidence, cv::Point& imgCoo
     else return false;
 }
 
-bool foundImage(std::string image, Point& imgCoord, double c)
+// image should be 0-4 { CARD, LEVEL, MAXIMIZE, MINIMIZE, OK }
+bool foundImage(int image, Point& imgCoord, double c)
 {
-    std::string path = "resources/" + image + ".png";
     cv::Point cv_imgCoord{ 0,0 };
 
-    bool isImgExist = isImageOnScreen(path, c, cv_imgCoord);
+    std::vector<uint8_t> image_data = read_image(screenConfig.imagePath_, image);
+    cv::Mat decoded_image = cv::imdecode(cv::Mat(image_data), cv::IMREAD_UNCHANGED);
+
+    bool isImgExist = isImageOnScreen(decoded_image, c, cv_imgCoord);
 
     imgCoord.x = cv_imgCoord.x;
     imgCoord.y = cv_imgCoord.y;
@@ -198,7 +209,7 @@ void adjustWindowSize(int newWidth, int newHeight)
     RECT rect;
     GetWindowRect(hwnd, &rect);
 
-    if ((rect.right - rect.left) != 379 || (rect.bottom - rect.top) != 634)
+    if ((rect.right - rect.left) != screenConfig.emulatorWidth_ || (rect.bottom - rect.top) != screenConfig.emulatorHeight_)
     {
         SetWindowPos(hwnd, nullptr, rect.right - newWidth, rect.bottom - newHeight, newWidth, newHeight, SWP_NOZORDER);
         Sleep(300);
@@ -209,20 +220,20 @@ void adjustWindowSize(int newWidth, int newHeight)
 void confirmWindowSize()
 {
     Point target_pos{ 0,0 };
-    if (foundImage("maximize", target_pos))
+    if (foundImage(2, target_pos))
     {
         moveTo(target_pos);
         Sleep(100);
         click();
     }
     Sleep(300);
-    if (foundImage("minimize", target_pos))
+    if (foundImage(3, target_pos))
     {
         moveTo(target_pos);
         Sleep(100);
         click();
     }
-    moveTo(Point{ 1000,500 });
+    moveTo(Point{ screenConfig.screenWidth_ / 2,screenConfig.screenHeight_ / 2 });
 }
 
 std::string generate_uid(int length)

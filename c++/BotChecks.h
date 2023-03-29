@@ -14,4 +14,7 @@ double getLatestVersion();
 
 bool isVersionMatch(double currVersion);
 
-bool isResolutionSupported();
+bool isEnglish();
+
+extern const char* emulatorNameCHAR;
+extern LPCWSTR emulatorNameLPCWSTR;

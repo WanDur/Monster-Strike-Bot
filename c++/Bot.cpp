@@ -59,15 +59,15 @@ void Bot::clicker(ClickOption option)
         Sleep(500);
         break;
     case MenuSpamClick:
-        moveTo(pos_cal(okButtonX, okButtonBY));
-        click();
-        Sleep(300);
-
         moveTo(pos_cal(okButtonX, okButtonCY));
         click();
         Sleep(300);
 
         moveTo(pos_cal(okButtonX, okButtonEY));
+        click();
+        Sleep(300);
+
+        moveTo(pos_cal(okButtonX, okButtonBY));
         click();
         Sleep(300);
         break;
@@ -99,6 +99,9 @@ void Bot::clicker(ClickOption option)
         click();
         moveTo(Point{ 1000, 500 });
         break;
+    case FullSpamClick:
+        fullSpamClick(relPos_cal(middleX, true), relPos_cal(okButtonCY, false), relPos_cal(0.9, false));
+        break;
     }
 }
 
@@ -121,38 +124,37 @@ void Bot::skipped_menu_control(int& counter)
 
 bool Bot::waitandclick(int& counter) 
 {
-    int i = 0;
-    while (1)
-    {
-        i++;
-        Point p{ 0,0 };
+    const int max_attempts = 60;
+    int attempts = 0;
+    Point p{ 0, 0 };
 
-        if (foundImage("card", p, 0.95))
+    while (attempts < max_attempts)
+    {
+        if (foundImage(0, p, 0.9))
         {
             clicker(SelectMonster);
             clicker(StartBattle);
             return true;
         }
-        if (i > 40)
-        {
-            PLOG_WARNING.printf("Something is wrong, restarting the bot");
-            POST(counter, log_info(MS_WARNING, "Restarting bot due to error", counter), UID);
-            return false;
-        }
+        else
+            attempts++;
     }
+    PLOG_WARNING.printf("Something is wrong, restarting the bot");
+    POST(counter, log_info(MS_WARNING, "Restarting bot due to error", counter), UID);
+    return false;
 }
 
 Bot::Bot()
 {
-    int window_data[4] = { 0 }, x, y, w, h;
+    int window_data[4] = { 0 };
     EnumWindows(EnumWindowsProc, reinterpret_cast<LPARAM>(window_data));
 
     if (window_data[0] != 0)
     {
-        x = window_data[0];
-        y = window_data[1];
-        w = window_data[2];
-        h = window_data[3];
+        dx = window_data[0];
+        dy = window_data[1];
+        width = window_data[2];
+        height = window_data[3];
     }
     else
     {
@@ -160,11 +162,6 @@ Bot::Bot()
         show_error_box(L"Emulator not found.");
         exit(0);
     }
-
-    dx = x;
-    dy = y;
-    width = w;
-    height = h;
 
     middle = { static_cast<int>(dx + width * 0.47384), static_cast<int>(dy + height * 0.50636) };
 
@@ -190,4 +187,12 @@ Bot::Bot()
 Point Bot::pos_cal(double x, double y)
 {
     return Point{ static_cast<int>(dx + width * x), static_cast<int>(dy + height * y) };
+}
+
+int Bot::relPos_cal(double x, bool isWidth)
+{
+    if (isWidth)
+        return static_cast<int>(dx + width * x);
+    else
+        return static_cast<int>(dy + height * x);
 }

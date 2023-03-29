@@ -9,7 +9,8 @@
 
 #include <plog/Log.h>
 
-#include "globals.h"
+#include "BotChecks.h"
+#include "ImagePacker.h"
 
 struct Point 
 {
@@ -27,11 +28,14 @@ void click();
 
 void doubleclick();
 
+void fullSpamClick(int middleX, int fromY, int toY);
+
 cv::Mat hwndToMat(HWND hwnd);
 
-bool isImageOnScreen(std::string imagePath, double confidence, cv::Point& imgCoord);
+bool isImageOnScreen(cv::Mat imageData, double confidence, cv::Point& imgCoord);
 
-bool foundImage(std::string image, Point& imgCoord, double c = 0.8);
+// image should be 0-4 { CARD, LEVEL, MAXIMIZE, MINIMIZE, OK }
+bool foundImage(int image, Point& imgCoord, double c = 0.8);
 
 int GetTimeNow();
 

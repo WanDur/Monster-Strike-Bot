@@ -52,19 +52,15 @@ bool isVersionMatch(double currVersion)
     }
 }
 
-bool isResolutionSupported()
+bool isEnglish()
 {
-    int my_width = GetSystemMetrics(SM_CXSCREEN);
-    int my_height = GetSystemMetrics(SM_CYSCREEN);
-
-    for (int i = 0; i < kSupportedSize; i++)
-    {
-        if (my_width != kSupportedWidth[i] || my_height != kSupportedHeight[i])
-        {
-            PLOG_ERROR.printf("Your screen resolution is not supported");
-            return false;
-        }
-    }
-
-    return true;
+    HWND hwnd = FindWindow(nullptr, L"NoxPlayer");
+    return (hwnd != nullptr);
 }
+
+/* replace the line with your emulator name
+ * LPCWSTR emulatorNameLPCWSTR = L"your emulator"
+ * const char* emulatorNameCHAR = "your emulator"
+ */
+LPCWSTR emulatorNameLPCWSTR = isEnglish() ? L"NoxPlayer" : L"夜神模擬器"; // change this 
+const char* emulatorNameCHAR = isEnglish() ? "NoxPlayer" : "夜神模擬器";  // change this

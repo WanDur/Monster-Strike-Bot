@@ -13,3 +13,4 @@
 #include "CustomPlog.h"
 #include "BotChecks.h"
 #include "Bot.h"
+#include "ScreenConfig.h"

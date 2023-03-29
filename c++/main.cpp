@@ -3,6 +3,10 @@
 constexpr double VERSION = 3.0;
 
 Point emptyPoint{ 0,0 };
+enum Images
+{
+    CARD, LEVEL, MAXIMIZE, MINIMIZE, OK
+};
 
 void checkFailSafe(int failSafeDistance, const Bot& rMSBot)
 {
@@ -26,6 +30,8 @@ void checkFailSafe(int failSafeDistance, const Bot& rMSBot)
 
 int main()
 {
+    ScreenConfig& screenConfig = ScreenConfig::getInstance();
+
     std::ofstream logfile("msbot.log", std::ios::trunc);
     logfile.close();
 
@@ -35,7 +41,7 @@ int main()
 
     PLOG_INFO.printf("Checking your environment");
 
-    if (!isResolutionSupported())
+    if (!screenConfig.isResolutionMatch())
     {
         show_error_box(L"Your screen resolution is not supported!");
         exit(0);
@@ -47,10 +53,10 @@ int main()
         exit(0);
     }
 
-    adjustWindowSize(379, 634);
-    Sleep(500);
+    Sleep(2000);
+    adjustWindowSize(screenConfig.emulatorWidth_, screenConfig.emulatorHeight_);
 
-    if (!foundImage("level", emptyPoint))
+    if (!foundImage(LEVEL, emptyPoint))
     {
         system("cls");
         PLOG_ERROR.printf("The game is not on the screen");
@@ -117,7 +123,7 @@ int main()
 
             if (std::chrono::steady_clock::now() >= endTime)
             {
-                if (foundImage("ok", emptyPoint))
+                if (foundImage(OK, emptyPoint))
                 {
                     inBattle = false;
                     inResultPage = true;
@@ -129,11 +135,19 @@ int main()
         PLOG_INFO.printf("Battle %d: in result page", counter);
         POST(counter, log_info(ms_bot.MS_INFO, "In result page", counter), ms_bot.UID);
 
+        int numberofSpamClick = 0;
         while (inResultPage)
         {
+            
             ms_bot.clicker(Bot::MenuSpamClick);
-            Sleep(500);
-            if (foundImage("level", emptyPoint))
+            numberofSpamClick++;
+
+            if (numberofSpamClick > 16)
+            {
+                ms_bot.clicker(Bot::FullSpamClick);
+            }
+
+            if (foundImage(LEVEL, emptyPoint))
             {
                 PLOG_INFO.printf("Battle %d: ended", counter);
                 POST(counter, log_info(ms_bot.MS_INFO, "Ended", counter), ms_bot.UID);

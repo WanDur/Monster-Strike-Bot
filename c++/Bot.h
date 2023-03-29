@@ -49,7 +49,7 @@ public:
     const std::string MS_ERROR = "< ERROR >";
     enum ClickOption {
         MainMenu, ThreeSubMenu, AllTrainList, ExtendTrain, PressExtendedTrain, SinglePlayer, SelectMonster,
-        StartBattle, StartBtn, MenuSpamClick, okBtnD, BottomMainMenu, ShortCut, SetShortCut, MaximizeWindow
+        StartBattle, StartBtn, MenuSpamClick, okBtnD, BottomMainMenu, ShortCut, SetShortCut, MaximizeWindow, FullSpamClick
     };
 
     Bot();
@@ -59,4 +59,5 @@ public:
     void skipped_menu_control(int& counter);
     bool waitandclick(int& counter);
     Point pos_cal(double x, double y);
+    int relPos_cal(double x, bool isWidth);
 };
