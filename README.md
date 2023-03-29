@@ -1,4 +1,4 @@
-# Monster Strike Bot v3.0
+# Monster Strike Bot v3.1
 
 This script is designed to automate actions in Monster Strike, but it does not interact with the game's data in any way. It operates solely by performing actions based on ratios.
 
@@ -21,6 +21,10 @@ Before proceeding, make sure you have completed all steps in [Getting started](#
 4. The UID is printed on the terminal every time you run the bot.
 
 ## Versions
+- 3.1
+  - All matching images are packed in one file
+  - Added screenconfig class for dynamically changing variables related to screen resolution
+  - Added `fullSpamClick()` to allow the bot to click different "ok" button in game
 - 3.0
   - Rewrote the bot in c++ for overall improvement
   - Created custom API to check bot status
