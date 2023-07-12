@@ -11,7 +11,7 @@ private:
     int dx, dy, width, height;
 
     Point middle, a1, a2, a3, a4, a5, a6, a7;
-    Point posList[7];
+    Point posList[10];
 
 #pragma region All ratios
     double middleX        = 0.4570;
@@ -30,7 +30,7 @@ private:
     double okButtonBY     = 0.8318;
     double okButtonCY     = 0.6087;
     double okButtonDY     = 0.8065;
-    double okButtonEY     = 0.7120;
+    double okButtonEY     = 0.9371;
     double bottommenuX    = 0.0795;
     double bottommenuY    = 0.9468;
     double shortcutY      = 0.7474;

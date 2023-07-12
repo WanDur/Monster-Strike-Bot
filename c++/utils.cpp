@@ -212,8 +212,7 @@ void adjustWindowSize(int newWidth, int newHeight)
     if ((rect.right - rect.left) != screenConfig.emulatorWidth_ || (rect.bottom - rect.top) != screenConfig.emulatorHeight_)
     {
         SetWindowPos(hwnd, nullptr, rect.right - newWidth, rect.bottom - newHeight, newWidth, newHeight, SWP_NOZORDER);
-        Sleep(300);
-        confirmWindowSize();
+        Sleep(100);
     }
 }
 

@@ -1,6 +1,6 @@
 ﻿#include "main.h"
 
-constexpr double VERSION = 3.0;
+constexpr double VERSION = 3.2;
 
 Point emptyPoint{ 0,0 };
 enum Images
@@ -53,23 +53,44 @@ int main()
         exit(0);
     }
 
-    Sleep(2000);
     adjustWindowSize(screenConfig.emulatorWidth_, screenConfig.emulatorHeight_);
 
-    if (!foundImage(LEVEL, emptyPoint))
     {
-        system("cls");
-        PLOG_ERROR.printf("The game is not on the screen");
-        show_error_box(L"The game is not on the screen");
-        exit(0);
+        auto start = std::chrono::high_resolution_clock::now();
+        bool isImageFound = false;
+
+        while (true)
+        {
+            if (foundImage(LEVEL, emptyPoint))
+            {
+                isImageFound = true;
+                break;
+            }
+
+            auto now = std::chrono::high_resolution_clock::now();
+            auto duration = std::chrono::duration_cast<std::chrono::seconds>(now - start).count();
+
+            if (duration >= 10)
+            {
+                break;
+            }
+
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+
+        if (!isImageFound)
+        {
+            system("cls");
+            PLOG_ERROR.printf("The game is not on the screen");
+            show_error_box(L"The game is not on the screen");
+            exit(0);
+        }
     }
 
-    PLOG_INFO.printf("Done checking");
-    PLOG_INFO.printf("Bot starts after 2 seconds");
-    
+    confirmWindowSize();
+
     Bot ms_bot;
     int counter = 0;
-    Sleep(2000);
     system("cls");
 
     int start = GetTimeNow();

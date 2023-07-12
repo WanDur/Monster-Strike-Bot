@@ -2,11 +2,8 @@
 
 void Bot::shoot()
 {
-    Point finalPos = posList[randint(0, 6)];
-    moveTo(middle);
-    Sleep(200);
+    Point finalPos = posList[randint(0, 9)];
     dragTo(finalPos, 100);
-
     Sleep(1200);
 }
 
@@ -63,11 +60,11 @@ void Bot::clicker(ClickOption option)
         click();
         Sleep(300);
 
-        moveTo(pos_cal(okButtonX, okButtonEY));
+        moveTo(pos_cal(okButtonX, okButtonBY));
         click();
         Sleep(300);
 
-        moveTo(pos_cal(okButtonX, okButtonBY));
+        moveTo(pos_cal(okButtonX, okButtonEY));
         click();
         Sleep(300);
         break;
@@ -163,20 +160,23 @@ Bot::Bot()
         exit(0);
     }
 
-    middle = { static_cast<int>(dx + width * 0.47384), static_cast<int>(dy + height * 0.50636) };
+    middle = { static_cast<int>(dx + width * 0.4738), static_cast<int>(dy + height * 0.5063) };
 
-    double shootPosRatio[7][2] =
+    double shootPosRatio[10][2] =
     {
         {0.3721, 0.2434},
         {0.3227, 0.4191},
         {0.6696, 0.4191},
         {0.7752, 0.4526},
         {0.0795, 0.5688},
-        {0.3023, 0.6225},
-        {0.6696, 0.6225}
+        {0.3023, 0.6000},
+        {0.6696, 0.7000},
+        {0.4500, 0.3500},
+        {0.2000, 0.5000},
+        {0.6000, 0.5500}
     };
 
-    for (int i = 0; i < 7; i++) 
+    for (int i = 0; i < 10; i++) 
     {
         posList[i] = { static_cast<int>(dx + width * shootPosRatio[i][0]), static_cast<int>(dy + height * shootPosRatio[i][1]) };
     }
