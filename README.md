@@ -1,4 +1,4 @@
-# Monster Strike Bot v3.1
+# Monster Strike Bot v3.2
 
 This script is designed to automate actions in Monster Strike, but it does not interact with the game data. It operates solely by performing actions based on ratios.
 
@@ -14,11 +14,10 @@ The bot is developed in Windows 11 with NoxPlayer.
 ### Python version
 - easier to make custom changes
 - more readable
-- not maintained anymore
+- no features from v3.0
 
 ### C++ version
 - much smaller build size than python
-- the source code is kinda messy
 
 ## Getting started
 
@@ -32,6 +31,9 @@ The bot is developed in Windows 11 with NoxPlayer.
 4. You can check your bot status remotely at [here](https://msbot.pythonanywhere.com) where the UID required is printed on the terminal every time you run the bot.
 
 ## Versions
+- 3.2
+  - Updated for ver. 26.0
+  - Improved shooting
 - 3.1
   - All matching images are packed in one file
   - Added screenconfig class for dynamically changing variables related to screen resolution
@@ -91,7 +93,7 @@ The bot is developed in Windows 11 with NoxPlayer.
   - Automatically detects window size and position (WindowSizeChecker.exe removed)
   - Faster shooting
 - 1.2
-  -  shoot faster
+  - shoot faster
 - 1.1
   - Added a long press feature to return to the last battle
   - Added support for two more resolutions
