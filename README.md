@@ -11,6 +11,7 @@ This script is designed to automate actions in Monster Strike, but it does not i
 ## About
 ### Development environment
 - Windows 11, screen resolution: 1920x1080
+- Monster strike TW version
 - NoxPlayer settings
   - Custom: CPU 6 core, Memory 8192 MB
   - Graphics rendering mode: Enhanced compatibility mode
