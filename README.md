@@ -9,7 +9,15 @@ This script is designed to automate actions in Monster Strike, but it does not i
   - [Versions](#versions)
 
 ## About
-The bot is developed in Windows 11 with NoxPlayer.
+### Development environment
+- Windows 11, screen resolution: 1920x1080
+- NoxPlayer settings
+  - Custom: CPU 6 core, Memory 8192 MB
+  - Graphics rendering mode: Enhanced compatibility mode
+  - Resolution setting: Mobile phone, 900x1600
+  - Frame setting: 60
+  - Mobile phone model: Default model (Samsung Galaxy S20 ultra)
+  - Toolbar display: Only show the icon
 
 ### Python version
 - easier to make custom changes
@@ -26,7 +34,7 @@ The bot is developed in Windows 11 with NoxPlayer.
 ## How To Use
 
 1. Open NoxPlayer and enter the game's main menu.
-2. Run MSBot.exe
+2. Run MSBot.exe, and **make sure to bring back NoxPlayer to the front of the screen.**
 3. Move your mouse to any corner of the screen to stop the bot, or simply close it.
 4. You can check your bot status remotely at [here](https://msbot.pythonanywhere.com) where the UID required is printed on the terminal every time you run the bot.
 
