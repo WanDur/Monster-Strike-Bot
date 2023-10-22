@@ -1,4 +1,4 @@
-# Monster Strike Bot v3.2
+# Monster Strike Bot v3.3
 
 This script is designed to automate actions in Monster Strike, but it does not interact with the game data. It operates solely by performing actions based on ratios.
 
@@ -11,7 +11,7 @@ This script is designed to automate actions in Monster Strike, but it does not i
 ## About
 ### Development environment
 - Windows 11, screen resolution: 1920x1080
-- Monster strike TW version
+- Monster strike TW v27.0.0
 - NoxPlayer settings
   - Custom: CPU 6 core, Memory 8192 MB
   - Graphics rendering mode: Enhanced compatibility mode
@@ -40,6 +40,8 @@ This script is designed to automate actions in Monster Strike, but it does not i
 4. You can check your bot status remotely at [here](https://msbot.pythonanywhere.com) where the UID required is printed on the terminal every time you run the bot.
 
 ## Versions
+- 3.3
+  - Updated for ver. 27.0
 - 3.2
   - Updated for ver. 26.0
   - Improved shooting
