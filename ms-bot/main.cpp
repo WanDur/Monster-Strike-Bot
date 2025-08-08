@@ -1,0 +1,579 @@
+﻿#include <imgui/imgui.h>
+#include <imgui/backends/imgui_impl_win32.h>
+#include <imgui/backends/imgui_impl_dx11.h>
+#include "main.h"
+#include "util/encoding.h"
+#include <d3d11.h>
+#include <tchar.h>
+
+#include "util/capture.cpp"
+
+// Data
+static ID3D11Device* g_pd3dDevice = nullptr;
+static ID3D11DeviceContext* g_pd3dDeviceContext = nullptr;
+static IDXGISwapChain* g_pSwapChain = nullptr;
+static bool                     g_SwapChainOccluded = false;
+static UINT                     g_ResizeWidth = 0, g_ResizeHeight = 0;
+static ID3D11RenderTargetView* g_mainRenderTargetView = nullptr;
+
+// Forward declarations of helper functions
+bool CreateDeviceD3D(HWND hWnd);
+void CleanupDeviceD3D();
+void CreateRenderTarget();
+void CleanupRenderTarget();
+LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+struct LogEntry {
+    std::string type;
+    std::tm time;
+    std::string message;
+    std::string tooltip;
+
+    LogEntry(const std::string& t, const std::string& m, const std::string& tool = "") : type(t), message(m), tooltip(tool) {
+        std::time_t now = std::time(nullptr);
+        time = *std::localtime(&now);
+    }
+};
+
+void LoadStyle(float scale = 1.0f)
+{
+    ImGuiStyle& s = ImGui::GetStyle();
+    ImVec4* c = s.Colors;
+
+    const ImVec4 teal = ImVec4(0.23f, 0.70f, 0.71f, 1.00f);
+
+    c[ImGuiCol_Text] = ImVec4(0.90f, 0.92f, 0.95f, 1.00f);
+    c[ImGuiCol_WindowBg] = ImVec4(0.12f, 0.12f, 0.13f, 1.00f);
+    c[ImGuiCol_ChildBg] = ImVec4(0.14f, 0.14f, 0.16f, 1.00f);
+    c[ImGuiCol_FrameBg] = ImVec4(0.18f, 0.18f, 0.20f, 1.00f);
+    c[ImGuiCol_FrameBgHovered] = ImVec4(0.23f, 0.23f, 0.26f, 1.00f);
+    c[ImGuiCol_FrameBgActive] = teal;
+    c[ImGuiCol_Button] = teal;
+    c[ImGuiCol_ButtonHovered] = ImVec4(0.27f, 0.79f, 0.80f, 1.00f);
+    c[ImGuiCol_ButtonActive] = ImVec4(0.19f, 0.58f, 0.60f, 1.00f);
+    c[ImGuiCol_Header] = ImVec4(0.23f, 0.70f, 0.71f, 0.34f);
+    c[ImGuiCol_HeaderHovered] = teal;
+    c[ImGuiCol_HeaderActive] = teal;
+    c[ImGuiCol_Tab] = ImVec4(0.14f, 0.14f, 0.16f, 1.00f);
+    c[ImGuiCol_TabActive] = teal;
+    c[ImGuiCol_TabHovered] = ImVec4(0.27f, 0.79f, 0.80f, 1.00f);
+
+    // Softer typography & spacing
+    s.WindowRounding = 6.0f;
+    s.ChildRounding = 6.0f;
+    s.FrameRounding = 5.0f;
+    s.PopupRounding = 6.0f;
+    s.FrameBorderSize = 0.0f;
+    s.WindowPadding = ImVec2(14, 10);
+    s.FramePadding = ImVec2(10, 6);
+    s.ItemSpacing = ImVec2(8, 6);
+    s.ScrollbarSize = 14.0f;
+}
+
+// Main code
+int main(int, char**)
+{
+    // Make process DPI aware and obtain main monitor scale
+    ImGui_ImplWin32_EnableDpiAwareness();
+    float main_scale = ImGui_ImplWin32_GetDpiScaleForMonitor(::MonitorFromPoint(POINT{ 0, 0 }, MONITOR_DEFAULTTOPRIMARY));
+
+    // Get Primary monitor info
+    MONITORINFO mi;
+    mi.cbSize = sizeof(mi);
+    GetMonitorInfo(MonitorFromPoint(POINT{ 0, 0 }, MONITOR_DEFAULTTOPRIMARY), &mi);
+
+    int screenWidth = mi.rcMonitor.right - mi.rcMonitor.left;
+    int screenHeight = mi.rcMonitor.bottom - mi.rcMonitor.top;
+
+	// fall back to 1920x1080 if monitor info is not available
+    if (screenWidth <= 0 || screenHeight <= 0) {
+        screenWidth = 1920;
+        screenHeight = 1080;
+	}
+
+    // Create application window
+    WNDCLASSEXW wc = { sizeof(wc), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(nullptr), nullptr, nullptr, nullptr, nullptr, L"Monster Strike Bot", nullptr };
+    ::RegisterClassExW(&wc);
+    HWND hwnd = CreateWindowEx(WS_EX_LAYERED | WS_EX_TOPMOST | WS_EX_NOACTIVATE, L"Monster Strike Bot", NULL, WS_POPUP, 0, 0, screenWidth, screenHeight, NULL, NULL, wc.hInstance, NULL);
+    SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 0, ULW_COLORKEY);
+
+    // Initialize Direct3D
+    if (!CreateDeviceD3D(hwnd))
+    {
+        CleanupDeviceD3D();
+        ::UnregisterClassW(wc.lpszClassName, wc.hInstance);
+        return 1;
+    }
+
+    // Show the window
+    ::ShowWindow(hwnd, SW_SHOWDEFAULT);
+    ::UpdateWindow(hwnd);
+
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    LoadStyle(main_scale);
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
+    //io.ConfigViewportsNoAutoMerge = true;
+    //io.ConfigViewportsNoTaskBarIcon = true;
+    //io.ConfigViewportsNoDefaultParent = true;
+    //io.ConfigDockingAlwaysTabBar = true;
+    //io.ConfigDockingTransparentPayload = true;
+
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+    //ImGui::StyleColorsLight();
+
+    // Setup scaling
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.ScaleAllSizes(main_scale);        // Bake a fixed style scale. (until we have a solution for dynamic style scaling, changing this requires resetting Style + calling this again)
+    style.FontScaleDpi = main_scale;        // Set initial font scale. (using io.ConfigDpiScaleFonts=true makes this unnecessary. We leave both here for documentation purpose)
+    io.ConfigDpiScaleFonts = true;          // [Experimental] Automatically overwrite style.FontScaleDpi in Begin() when Monitor DPI changes. This will scale fonts but _NOT_ scale sizes/padding for now.
+    io.ConfigDpiScaleViewports = true;      // [Experimental] Scale Dear ImGui and Platform Windows when Monitor DPI changes.
+
+    // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        style.WindowRounding = 0.0f;
+        style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+    }
+
+    // Setup Platform/Renderer backends
+    ImGui_ImplWin32_Init(hwnd);
+    ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dDeviceContext);
+
+    // Load Fonts
+    // - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
+    // - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select the font among multiple.
+    // - If the file cannot be loaded, the function will return a nullptr. Please handle those errors in your application (e.g. use an assertion, or display an error and quit).
+    // - Use '#define IMGUI_ENABLE_FREETYPE' in your imconfig file to use Freetype for higher quality font rendering.
+    // - Read 'docs/FONTS.md' for more instructions and details.
+    // - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
+    //style.FontSizeBase = 20.0f;   
+    //io.Fonts->AddFontDefault();
+    io.Fonts->Clear();
+
+    ImFont* latinRegular = io.Fonts->AddFontFromFileTTF("C:/Windows/Fonts/segoeui.ttf", 20.0f, nullptr);
+    IM_ASSERT(latinRegular && "Failed to load Inter-Regular.ttf");
+
+    ImFontConfig mergeCfg;
+    mergeCfg.MergeMode = true;
+    mergeCfg.PixelSnapH = true;
+
+    io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\msyh.ttc", 20.0f, &mergeCfg, io.Fonts->GetGlyphRangesChineseFull());
+
+    ImFont* latinBold = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\seguisb.ttf", 20.0f, nullptr);
+
+    ImFontConfig boldMergeCfg;
+    boldMergeCfg.MergeMode = true;
+    boldMergeCfg.PixelSnapH = true;
+    io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\msyh.ttc", 20.0f, &boldMergeCfg);
+
+    io.FontDefault = latinRegular;
+
+    // Our state
+    bool show_demo_window = false;
+    bool show_main_window = true;
+
+    static bool show_list_win = false;
+    static bool   confirm_stop = false;
+
+    static int total_matches = 0;
+    static int item_selected_idx = 0;
+    static std::vector<std::string> win_titles;
+    static std::string session_id = "xxxxx";
+
+    static bot::Config gCfg;
+    if (!gCfg.load()) {
+        std::puts("Config not found or malformed – using defaults.");
+        gCfg.save();
+    }
+
+    std::vector<LogEntry> logs;
+    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
+    // Main loop
+    bool done = false;
+    while (!done)
+    {
+        // Poll and handle messages (inputs, window resize, etc.)
+        // See the WndProc() function below for our to dispatch events to the Win32 backend.
+        MSG msg;
+        while (::PeekMessage(&msg, nullptr, 0U, 0U, PM_REMOVE))
+        {
+            ::TranslateMessage(&msg);
+            ::DispatchMessage(&msg);
+            if (msg.message == WM_QUIT)
+                done = true;
+        }
+        if (done)
+            break;
+
+        // Handle window being minimized or screen locked
+        if (g_SwapChainOccluded && g_pSwapChain->Present(0, DXGI_PRESENT_TEST) == DXGI_STATUS_OCCLUDED)
+        {
+            ::Sleep(10);
+            continue;
+        }
+        g_SwapChainOccluded = false;
+
+        // Handle window resize (we don't resize directly in the WM_SIZE handler)
+        if (g_ResizeWidth != 0 && g_ResizeHeight != 0)
+        {
+            CleanupRenderTarget();
+            g_pSwapChain->ResizeBuffers(0, g_ResizeWidth, g_ResizeHeight, DXGI_FORMAT_UNKNOWN, 0);
+            g_ResizeWidth = g_ResizeHeight = 0;
+            CreateRenderTarget();
+        }
+
+        // Start the Dear ImGui frame
+        ImGui_ImplDX11_NewFrame();
+        ImGui_ImplWin32_NewFrame();
+        ImGui::NewFrame();
+
+        ImGui::PushFont(latinRegular);
+
+        // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
+        if (show_demo_window)
+            ImGui::ShowDemoWindow(&show_demo_window);
+
+        // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
+        {
+            static float f = 0.0f;
+            static int counter = 0;
+
+            ImGui::SetNextWindowPos(ImVec2(50, 50), ImGuiCond_FirstUseEver);
+            ImGui::SetNextWindowSize(ImVec2(600, 450), ImGuiCond_FirstUseEver);
+            ImGui::Begin("Monster Strike Bot", &show_main_window, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_MenuBar);
+
+            if (ImGui::BeginMenuBar())
+            {
+                if (ImGui::BeginMenu("Mode"))
+                {
+                    if (ImGui::MenuItem("訓練冒險")) {}
+                    if (ImGui::MenuItem("英雄神殿")) {}
+                    ImGui::MenuItem("more coming soon. . .", NULL, false, false);
+                    ImGui::EndMenu();
+                }
+
+                ImGui::EndMenuBar();
+            }
+
+            // #region first row
+            ImGui::TextDisabled("Session");
+            ImGui::SameLine();
+            ImGui::PushFont(latinBold);
+            ImGui::Text("%s", session_id.c_str());
+            ImGui::PopFont();
+
+            ImGui::SameLine();
+            ImGui::Spacing();
+            ImGui::SameLine();
+            ImGui::TextDisabled("Emulator");
+            ImGui::SameLine();
+            ImGui::Text("%s", gCfg.emulatorName.empty() ? "not set" : gCfg.emulatorName.c_str());
+
+            ImGui::SameLine();
+            ImGui::Spacing();
+            ImGui::SameLine();
+            ImGui::TextDisabled("Mode");
+            ImGui::SameLine();
+            ImGui::Text("訓練冒險");
+            // #endregion first row
+
+            // #region second row
+            ImGui::TextDisabled("Matches");
+            ImGui::SameLine();
+            ImGui::Text("%d", total_matches);
+            // #endregion second row
+
+            const ImVec2 btnSize(140, 0);
+
+            if (ImGui::Button("Start", btnSize))
+            {
+                if (bot::isEmulatorOpened(gCfg))
+                {
+                    HWND emulatorHWND = windows::ensureWindowVisible(util::encoding::utf8ToWide(gCfg.emulatorName));
+                    Sleep(1000);
+                    CaptureWindowWGC(emulatorHWND, true);
+                    printf("Start bot");
+                }
+                else {
+                    logs.emplace_back("INFO", "Can't find your emulator", "1. Make sure to open the emulator\n2. If it's already opened but the bot still won't start, press Check\n3. Select the correct window title to set your emulator name manually");
+                }
+            }
+
+            ImGui::SameLine();
+
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.95f, 0.45f, 0.45f, 1.00f));
+            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.00f, 0.55f, 0.55f, 1.00f));
+            ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.90f, 0.40f, 0.40f, 1.00f));
+            if (ImGui::Button("Stop", btnSize))
+                ImGui::OpenPopup("Confirm Stop");
+            ImGui::PopStyleColor(3);
+
+            // ----- Modal confirmation -------------------------------------------------
+            if (ImGui::BeginPopupModal("Confirm Stop", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove))
+            {
+                ImGui::Text("Are you sure you want to stop?");
+                ImGui::Spacing();
+                if (ImGui::Button("Yes", ImVec2(100, 0)))
+                {
+                    // TODO: stop logic
+                    ImGui::CloseCurrentPopup();
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("No", ImVec2(100, 0)))
+                    ImGui::CloseCurrentPopup();
+
+                ImGui::EndPopup();
+            }
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("Check", btnSize))
+            {
+                win_titles = windows::enumerateAltTabWindows();
+                if (win_titles.empty())
+                {
+                    logs.emplace_back("INFO", "No emulator window found", "Make sure your emulator is running");
+                }
+                else show_list_win = true;
+            }
+
+            if (show_list_win) {
+                ImGui::SetNextWindowSizeConstraints(ImVec2(150.0f, -1.0f), ImVec2(FLT_MAX, FLT_MAX));
+                ImGui::Begin("Click to select", &show_list_win, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDocking);
+
+                if (ImGui::Button("Refresh")) {
+                    win_titles = windows::enumerateAltTabWindows();
+                }
+
+                ImGui::Separator(); 
+
+                int idx = 0;
+
+                for (const auto& t : win_titles)
+                {
+                    ImGui::PushID(idx);
+                    if (ImGui::Selectable(t.c_str(), false, ImGuiSelectableFlags_DontClosePopups)) {
+                        // on selection
+                        gCfg.emulatorName = t;
+                        gCfg.save();
+                        show_list_win = false;
+                    }
+                    ImGui::PopID();
+                    ++idx;
+                }
+
+                ImGui::End();
+            }
+
+
+            // #region LogBox
+            ImGui::BeginChild("LogBox", ImVec2(0, 0), true,
+                ImGuiWindowFlags_HorizontalScrollbar);
+
+            constexpr ImGuiTableFlags tableFlags =
+                ImGuiTableFlags_SizingFixedFit |
+                ImGuiTableFlags_RowBg |
+                ImGuiTableFlags_BordersInnerV;
+
+            if (ImGui::BeginTable("Logs", 3, tableFlags,
+                ImVec2(-FLT_MIN, -FLT_MIN)))
+            {
+                ImGui::TableSetupColumn("Type", ImGuiTableColumnFlags_WidthFixed,
+                    ImGui::CalcTextSize("ERROR ").x);
+                ImGui::TableSetupColumn("Time", ImGuiTableColumnFlags_WidthFixed,
+                    ImGui::CalcTextSize("00:00 ").x);
+                ImGui::TableSetupColumn("Msg", ImGuiTableColumnFlags_WidthStretch);
+
+                ImGui::TableNextRow(ImGuiTableRowFlags_Headers);      // header spacer
+                ImGui::TableSetColumnIndex(2);
+
+                int rowIdx = 0;
+                for (const auto& log : logs)
+                {
+                    //--- 1. create an *invisible* selectable that spans all columns ----
+                    ImGui::PushID(rowIdx);                            // unique id per row
+                    ImGui::TableNextRow();
+
+                    // An invisible selectable gives us one single item that covers the
+                    // whole line, so IsItemHovered() works for the row instead of just
+                    // the last column we draw.
+                    const float rowHeight = ImGui::GetTextLineHeightWithSpacing();
+                    ImGui::Selectable("##row", false,
+                        ImGuiSelectableFlags_SpanAllColumns |
+                        ImGuiSelectableFlags_AllowOverlap,
+                        ImVec2(0.0f, rowHeight));
+
+                    //--- 2. draw the real cell contents on top ------------------------
+                    // Type
+                    ImGui::TableSetColumnIndex(0);
+                    ImGui::TextUnformatted(log.type.c_str());
+
+                    // Time
+                    char tbuf[6];               // HH:MM\0
+                    std::strftime(tbuf, sizeof tbuf, "%H:%M", &log.time);
+                    ImGui::TableSetColumnIndex(1);
+                    ImGui::TextUnformatted(tbuf);
+
+                    // Message
+                    ImGui::TableSetColumnIndex(2);
+                    ImGui::TextWrapped("%s", log.message.c_str());
+
+                    //--- 3. optional tooltip when the row is hovered ------------------
+                    if (ImGui::IsItemHovered(ImGuiHoveredFlags_RectOnly) &&
+                        !log.tooltip.empty())                        // only if there is one
+                    {
+                        ImGui::BeginTooltip();
+                        ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+                        ImGui::TextUnformatted(log.tooltip.c_str());
+                        ImGui::PopTextWrapPos();
+                        ImGui::EndTooltip();
+                    }
+
+                    ImGui::PopID();
+                    ++rowIdx;
+                }
+                ImGui::EndTable();
+            }
+
+            if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY() - 2.0f)
+                ImGui::SetScrollHereY(1.0f);
+
+            ImGui::EndChild();
+
+            // #endregion LogBox
+
+            ImGui::PopFont();
+            ImGui::End();
+        }
+
+        if (!show_main_window)
+        {
+            ::PostQuitMessage(0);
+        }
+
+        // Rendering
+        ImGui::Render();
+        const float clear_color_with_alpha[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+        g_pd3dDeviceContext->OMSetRenderTargets(1, &g_mainRenderTargetView, nullptr);
+        g_pd3dDeviceContext->ClearRenderTargetView(g_mainRenderTargetView, clear_color_with_alpha);
+        ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+
+        // Update and Render additional Platform Windows
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+        }
+
+        // Present
+        HRESULT hr = g_pSwapChain->Present(1, 0);   // Present with vsync
+        //HRESULT hr = g_pSwapChain->Present(0, 0); // Present without vsync
+        g_SwapChainOccluded = (hr == DXGI_STATUS_OCCLUDED);
+    }
+
+    // Cleanup
+    ImGui_ImplDX11_Shutdown();
+    ImGui_ImplWin32_Shutdown();
+    ImGui::DestroyContext();
+
+    CleanupDeviceD3D();
+    ::DestroyWindow(hwnd);
+    ::UnregisterClassW(wc.lpszClassName, wc.hInstance);
+
+    return 0;
+}
+
+// Helper functions
+bool CreateDeviceD3D(HWND hWnd)
+{
+    // Setup swap chain
+    DXGI_SWAP_CHAIN_DESC sd;
+    ZeroMemory(&sd, sizeof(sd));
+    sd.BufferCount = 2;
+    sd.BufferDesc.Width = 0;
+    sd.BufferDesc.Height = 0;
+    sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    sd.BufferDesc.RefreshRate.Numerator = 60;
+    sd.BufferDesc.RefreshRate.Denominator = 1;
+    sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+    sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+    sd.OutputWindow = hWnd;
+    sd.SampleDesc.Count = 1;
+    sd.SampleDesc.Quality = 0;
+    sd.Windowed = TRUE;
+    sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+
+    UINT createDeviceFlags = 0;
+    //createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
+    D3D_FEATURE_LEVEL featureLevel;
+    const D3D_FEATURE_LEVEL featureLevelArray[2] = { D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_0, };
+    HRESULT res = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, createDeviceFlags, featureLevelArray, 2, D3D11_SDK_VERSION, &sd, &g_pSwapChain, &g_pd3dDevice, &featureLevel, &g_pd3dDeviceContext);
+    if (res == DXGI_ERROR_UNSUPPORTED) // Try high-performance WARP software driver if hardware is not available.
+        res = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_WARP, nullptr, createDeviceFlags, featureLevelArray, 2, D3D11_SDK_VERSION, &sd, &g_pSwapChain, &g_pd3dDevice, &featureLevel, &g_pd3dDeviceContext);
+    if (res != S_OK)
+        return false;
+
+    CreateRenderTarget();
+    return true;
+}
+
+void CleanupDeviceD3D()
+{
+    CleanupRenderTarget();
+    if (g_pSwapChain) { g_pSwapChain->Release(); g_pSwapChain = nullptr; }
+    if (g_pd3dDeviceContext) { g_pd3dDeviceContext->Release(); g_pd3dDeviceContext = nullptr; }
+    if (g_pd3dDevice) { g_pd3dDevice->Release(); g_pd3dDevice = nullptr; }
+}
+
+void CreateRenderTarget()
+{
+    ID3D11Texture2D* pBackBuffer;
+    g_pSwapChain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer));
+    g_pd3dDevice->CreateRenderTargetView(pBackBuffer, nullptr, &g_mainRenderTargetView);
+    pBackBuffer->Release();
+}
+
+void CleanupRenderTarget()
+{
+    if (g_mainRenderTargetView) { g_mainRenderTargetView->Release(); g_mainRenderTargetView = nullptr; }
+}
+
+// Forward declare message handler from imgui_impl_win32.cpp
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+// Win32 message handler
+// You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
+// - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application, or clear/overwrite your copy of the mouse data.
+// - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application, or clear/overwrite your copy of the keyboard data.
+// Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
+LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+    if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
+        return true;
+
+    switch (msg)
+    {
+    case WM_SIZE:
+        if (wParam == SIZE_MINIMIZED)
+            return 0;
+        g_ResizeWidth = (UINT)LOWORD(lParam); // Queue resize
+        g_ResizeHeight = (UINT)HIWORD(lParam);
+        return 0;
+    case WM_SYSCOMMAND:
+        if ((wParam & 0xfff0) == SC_KEYMENU) // Disable ALT application menu
+            return 0;
+        break;
+    case WM_DESTROY:
+        ::PostQuitMessage(0);
+        return 0;
+    }
+    return ::DefWindowProcW(hWnd, msg, wParam, lParam);
+}
