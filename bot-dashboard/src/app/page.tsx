@@ -13,7 +13,7 @@ export default function Page() {
     setSubmitting(true)
     // Small delay for UX so the disabled state is visible
     setTimeout(() => {
-      router.push(`/dashboard/${encodeURIComponent(trimmed)}`)
+      router.push(`/dashboard/${encodeURIComponent(trimmed.toUpperCase())}`)
     }, 30)
   }, [code, router])
 

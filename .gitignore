@@ -364,3 +364,4 @@ FodyWeavers.xsd
 
 # Custom
 ms-bot/imgui.ini
+.vercel

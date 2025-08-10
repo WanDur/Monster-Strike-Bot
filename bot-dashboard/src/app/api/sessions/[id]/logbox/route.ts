@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getRedis } from '@/lib/redis'
-import { kSess, kIdem, kMatches, kLogs, kStatus } from '@/lib/keys'
+import { kSess, kIdem, kLogs, kStatus } from '@/lib/keys'
 import { deriveStatus } from '@/lib/status'
 import type { LogLine } from '@/lib/types'
 import { timingSafeEq } from '@/lib/auth'
@@ -27,34 +27,26 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   const idem = req.headers.get('x-idempotency-key') || ''
   if (idem) {
     const ok = await r.set(kIdem(sid, idem), '1', { NX: true, EX: 30 * 60 })
-    if (ok === null) {
-      const totalMatches = Number(await r.get(kMatches(sid))) || 0
-      return NextResponse.json({ ok: true, totalMatches, reused: true })
-    }
+    if (ok === null) return NextResponse.json({ ok: true, reused: true })
   }
 
-  // Accept only match_completed
-  let type = 'match_completed'
+  let level: LogLine['level'] = 'log'
+  let message = ''
+  let ts = Date.now()
   try {
     const b = await req.json()
-    type = b?.type || 'match_completed'
+    if (b.level) level = b.level
+    if (b.message) message = String(b.message)
+    if (b.ts) ts = Number(b.ts)
   } catch {}
 
-  if (type !== 'match_completed') {
-    return NextResponse.json({ error: 'unsupported event' }, { status: 400 })
-  }
-
-  const totalMatches = await r.incr(kMatches(sid))
-  const now = Date.now()
-  await r.hSet(kSess(sid), { updatedAt: String(now) })
-
-  const log: LogLine = { level: 'log', message: 'match_completed', ts: now }
-  await r.lPush(kLogs(sid), JSON.stringify(log))
+  await r.lPush(kLogs(sid), JSON.stringify({ level, message, ts } satisfies LogLine))
   await r.lTrim(kLogs(sid), 0, 499)
+  await r.hSet(`sess:${sid}`, { updatedAt: String(Date.now()) })
 
   const recent = (await r.lRange(kLogs(sid), 0, 49)).map((s) => JSON.parse(s) as LogLine)
   const status = deriveStatus(recent)
   await r.set(kStatus(sid), status)
 
-  return NextResponse.json({ ok: true, totalMatches })
+  return NextResponse.json({ ok: true, status })
 }
