@@ -1,4 +1,10 @@
-# Monster Strike Bot v3.3
+# Monster Strike Bot Legacy
+
+> ⚠️ **Deprecated**  
+> This branch is no longer maintained. The bot has been rewritten with new features.  
+> Please use the [latest version](https://github.com/WanDur/Monster-Strike-Bot).
+
+--- 
 
 This script is designed to automate actions in Monster Strike, but it does not interact with the game data. It operates solely by performing actions based on ratios.
 
