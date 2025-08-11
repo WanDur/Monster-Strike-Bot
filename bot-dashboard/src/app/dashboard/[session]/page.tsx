@@ -1,27 +1,18 @@
 'use client'
 
-import { use, useEffect, useMemo, useRef, useState } from 'react'
+import { use, useEffect, useState } from 'react'
 import { useSession } from '@/hooks/useSession'
-import type { StatusKind, DashboardPayload } from '@/lib/types'
-
-type StatusPayload = {
-  session: string
-  startAt?: number // when the session code was first created (ms epoch)
-  updatedAt?: number // last update time (ms epoch)
-  totalMatches?: number
-  status?: StatusKind
-  logs?: string[] // newest last
-}
-
-// ---- helpers ---------------------------------------------------------------
+import type { StatusKind } from '@/lib/types'
+import LogBox from '@/components/LogBox'
 
 function classNames(...xs: (string | false | null | undefined)[]) {
   return xs.filter(Boolean).join(' ')
 }
 
-// format per spec:
-// <1min, then "2mins", "50mins", then "1hr", "1hr 25mins", and cap top unit at hr (e.g., "26hr 30mins")
-function formatSince(startAt?: number): string {
+/**
+ * format time. Top unit is hr, then mins.
+ */
+const formatSince = (startAt?: number): string => {
   if (!startAt) return '—'
   const diffMs = Date.now() - startAt
   const totalMin = Math.floor(diffMs / 60000)
@@ -32,7 +23,7 @@ function formatSince(startAt?: number): string {
   return mins === 0 ? `${hours}hr` : `${hours}hr ${mins}mins`
 }
 
-function useTicker(intervalMs = 30000) {
+const useTicker = (intervalMs = 30000) => {
   const [, setTick] = useState(0)
   useEffect(() => {
     const t = setInterval(() => setTick((x) => x + 1), intervalMs)
@@ -40,62 +31,17 @@ function useTicker(intervalMs = 30000) {
   }, [intervalMs])
 }
 
-// ---- dummy data (fallback) -------------------------------------------------
-function useDummy(session: string): StatusPayload {
-  const start = useMemo(() => Date.now() - 1000 * 60 * 87 - 1000 * 30, []) // ~1hr 27mins 30s ago
-  const [state, setState] = useState<StatusPayload>({
-    session,
-    startAt: start,
-    updatedAt: Date.now(),
-    totalMatches: 128,
-    status: 'normal',
-    logs: [
-      'boot: reading config',
-      'network: connected',
-      'auth: ok',
-      'engine: warm start',
-      'scan: found 12 candidates',
-      'filter: 7 valid',
-      'matcher: running phase 1',
-      'matcher: 42/100',
-      'matcher: 84/100',
-      'matcher: complete',
-      'post: results sent'
-    ]
-  })
-
-  // lightly simulate activity
-  useEffect(() => {
-    const t = setInterval(() => {
-      setState((prev) => {
-        const now = Date.now()
-        const bump = Math.random() < 0.5 ? 1 : 0
-        const statuses: StatusKind[] = ['normal', 'alert', 'normal', 'normal', 'stopped', 'normal']
-        const maybeStatus = statuses[Math.floor(Math.random() * statuses.length)]
-        const next: StatusPayload = {
-          ...prev,
-          updatedAt: now,
-          totalMatches: (prev.totalMatches ?? 0) + bump,
-          status: maybeStatus === 'normal' ? 'normal' : prev.status, // mostly stay normal
-          logs: [
-            ...(prev.logs ?? []),
-            bump
-              ? `match added: #${(prev.totalMatches ?? 0) + bump}`
-              : `heartbeat ${new Date(now).toLocaleTimeString()}`
-          ].slice(-50)
-        }
-        return next
-      })
-    }, 4000)
-    return () => clearInterval(t)
-  }, [])
-
-  return state
-}
-
 // ---- components ------------------------------------------------------------
 
-function WidgetCard({ title, children, right }: { title: string; children: React.ReactNode; right?: React.ReactNode }) {
+const WidgetCard = ({
+  title,
+  children,
+  right
+}: {
+  title: string
+  children: React.ReactNode
+  right?: React.ReactNode
+}) => {
   return (
     <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/40 backdrop-blur p-5 shadow-sm h-full">
       <div className="flex items-start justify-between gap-3">
@@ -107,11 +53,11 @@ function WidgetCard({ title, children, right }: { title: string; children: React
   )
 }
 
-function BigNumber({ value }: { value: number | string | undefined }) {
+const BigNumber = ({ value }: { value: number | string | undefined }) => {
   return <div className="text-4xl md:text-5xl font-semibold tabular-nums">{value ?? '—'}</div>
 }
 
-function StatusPill({ status }: { status?: StatusKind }) {
+const StatusPill = ({ status }: { status?: StatusKind }) => {
   const s = status ?? 'alert'
   const map: Record<StatusKind, { label: string; ring: string; dot: string; text: string; bg: string }> = {
     normal: {
@@ -152,61 +98,18 @@ function StatusPill({ status }: { status?: StatusKind }) {
   )
 }
 
-function LiveDot() {
-  // recording-like: solid dot + subtle ping
+const LiveDot = () => {
   return (
     <div className="relative flex items-center">
-      <span className="absolute inline-flex h-3 w-3 rounded-full opacity-75 animate-ping bg-red-500/80" />
-      <span className="relative inline-flex h-3 w-3 rounded-full bg-red-500/80 shadow" />
+      <span className="absolute inline-flex h-3 w-3 rounded-full opacity-75 animate-ping bg-red-500/85" />
+      <span className="relative inline-flex h-3 w-3 rounded-full bg-red-500/85 shadow" />
     </div>
   )
 }
 
-function TimeLive({ startAt }: { startAt?: number }) {
+const TimeLive = ({ startAt }: { startAt?: number }) => {
   useTicker(15000) // update label every 15s
   return <BigNumber value={formatSince(startAt)} />
-}
-
-function LogBox({ items }: { items: string[] }) {
-  const ref = useRef<HTMLDivElement | null>(null)
-
-  // Show only the last 10 items
-  const displayItems = items.slice(-10)
-
-  // auto-scroll to bottom on new items
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    el.scrollTop = el.scrollHeight
-  }, [displayItems])
-
-  return (
-    <div
-      ref={ref}
-      className="h-80 overflow-y-auto rounded-xl bg-white/60 dark:bg-slate-900/30 p-3 
-      [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:rounded-full
-      [&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-track]:bg-neutral-700 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500"
-    >
-      <ul className="space-y-2 text-sm leading-tight text-slate-800 dark:text-slate-200">
-        {displayItems.map((t, i) => {
-          // Calculate the actual index in the original array
-          const actualIndex = items.length - displayItems.length + i
-          return (
-            <li
-              key={`${actualIndex}-${t.slice(0, 16)}`}
-              className="rounded-lg px-3 py-2 bg-slate-50/70 dark:bg-slate-800/50 border border-slate-200/70 dark:border-slate-700/50"
-              title={t}
-            >
-              <span className="text-slate-500 dark:text-slate-400 mr-2 tabular-nums">
-                {String(actualIndex + 1).padStart(3, '0')}
-              </span>
-              <span className="break-words">{t}</span>
-            </li>
-          )
-        })}
-      </ul>
-    </div>
-  )
 }
 
 // ---- page ------------------------------------------------------------------
@@ -218,7 +121,6 @@ export default function SessionPage({ params }: { params: Promise<{ session: str
   const startAt = data?.startAt ?? undefined
   const totalMatches = data?.totalMatches ?? 0
   const status = (data?.status ?? 'alert') as StatusKind
-  const logs = data?.logs?.map((l) => `${new Date(l.ts).toLocaleTimeString()} — ${l.level}: ${l.message}`) ?? []
 
   return (
     <main className="min-h-dvh bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900 p-6">
@@ -242,20 +144,16 @@ export default function SessionPage({ params }: { params: Promise<{ session: str
 
         {/* top widgets */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {/* total matches */}
           <WidgetCard title="Total matches">
             <BigNumber value={isLoading ? '—' : totalMatches} />
           </WidgetCard>
 
-          {/* total time (live label) */}
-          <WidgetCard title="Total time" right={<LiveDot />}>
+          <WidgetCard title="Total time" right={status !== 'stopped' && <LiveDot />}>
             {startAt ? <TimeLive startAt={startAt} /> : <div className="text-slate-400">—</div>}
           </WidgetCard>
 
-          {/* status — big, obvious */}
           <div className="md:col-span-2">
             <WidgetCard title="Status">
-              {/* show skeleton-ish while loading */}
               {isLoading ? (
                 <div className="rounded-2xl mt-2 px-5 py-6 w-full bg-slate-100 dark:bg-slate-800 animate-pulse" />
               ) : (
@@ -271,7 +169,7 @@ export default function SessionPage({ params }: { params: Promise<{ session: str
             {isLoading ? (
               <div className="h-80 rounded-xl bg-slate-100 dark:bg-slate-800 animate-pulse" />
             ) : (
-              <LogBox items={logs} />
+              <LogBox items={data?.logs ?? []} />
             )}
           </div>
         </WidgetCard>

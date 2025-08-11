@@ -36,7 +36,16 @@ const fetcher = async <T,>(url: string): Promise<T> => {
 function formatTime(ts?: number) {
   if (!ts) return '—'
   const d = new Date(ts)
-  return isNaN(d.getTime()) ? '—' : d.toLocaleString()
+  if (isNaN(d.getTime())) return '—'
+
+  return d.toLocaleString(undefined, {
+    month: 'short',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  })
 }
 
 function StatusBadge({ s }: { s: StatusKind }) {
@@ -105,76 +114,86 @@ export default function ViewAllSessionsPage() {
         </header>
 
         <div className="overflow-hidden rounded-2xl ring-1 ring-slate-200 dark:ring-slate-800 bg-white/70 dark:bg-slate-900/50 backdrop-blur">
-          <table className="w-full text-sm">
-            <thead className="bg-slate-100/70 dark:bg-slate-800/40">
-              <tr className="text-left">
-                <th className="px-4 py-3 font-medium">Session</th>
-                <th className="px-4 py-3 font-medium">Created</th>
-                <th className="px-4 py-3 font-medium">Last Updated</th>
-                <th className="px-4 py-3 font-medium">Matches</th>
-                <th className="px-4 py-3 font-medium">Status</th>
-                <th className="px-4 py-3 font-medium">Logs</th>
-              </tr>
-            </thead>
-            <tbody>
-              {isLoading ? (
-                <tr>
-                  <td colSpan={6} className="px-4 py-6 text-slate-500">
-                    Loading…
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-slate-100/70 dark:bg-slate-800/40">
+                <tr className="text-left">
+                  <th className="px-4 py-3 font-medium">Session</th>
+                  <th className="px-4 py-3 font-medium">Created</th>
+                  <th className="px-4 py-3 font-medium">Last Updated</th>
+                  <th className="px-4 py-3 font-medium">Matches</th>
+                  <th className="px-4 py-3 font-medium">Status</th>
+                  <th className="px-4 py-3 font-medium">Logs</th>
                 </tr>
-              ) : error ? (
-                <tr>
-                  <td colSpan={6} className="px-4 py-6 text-rose-600">
-                    Failed to load sessions.
-                  </td>
-                </tr>
-              ) : !data || data.items.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="px-4 py-6 text-slate-500">
-                    No sessions.
-                  </td>
-                </tr>
-              ) : (
-                data.items.map((row) => (
-                  <tr key={row.session} className="border-t border-slate-100 dark:border-slate-800">
-                    <td className="px-4 py-3 font-mono">{row.session}</td>
-                    <td className="px-4 py-3">{formatTime(row.startAt)}</td>
-                    <td className="px-4 py-3">{formatTime(row.updatedAt)}</td>
-                    <td className="px-4 py-3 tabular-nums">{row.totalMatches}</td>
-                    <td className="px-4 py-3">
-                      <StatusBadge s={row.status} />
-                    </td>
-                    <td className="px-4 py-3">
-                      <button
-                        className="text-slate-700 dark:text-slate-200 underline underline-offset-4 hover:opacity-80"
-                        onClick={() => openLogs(row.session)}
-                        title="View logs"
-                      >
-                        {row.logCount}
-                      </button>
+              </thead>
+              <tbody>
+                {isLoading ? (
+                  <tr>
+                    <td colSpan={6} className="shimmer-text px-4 py-6">
+                      Loading
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : error ? (
+                  <tr>
+                    <td colSpan={6} className="px-4 py-6 text-rose-600">
+                      Failed to load sessions.
+                    </td>
+                  </tr>
+                ) : !data || data.items.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="px-4 py-6 text-slate-500">
+                      No sessions.
+                    </td>
+                  </tr>
+                ) : (
+                  data.items.map((row) => (
+                    <tr key={row.session} className="border-t border-slate-100 dark:border-slate-800">
+                      <td className="px-4 py-3 font-mono">{row.session}</td>
+                      <td className="px-4 py-3">{formatTime(row.startAt)}</td>
+                      <td className="px-4 py-3">{formatTime(row.updatedAt)}</td>
+                      <td className="px-4 py-3 tabular-nums">{row.totalMatches}</td>
+                      <td className="px-4 py-3">
+                        <StatusBadge s={row.status} />
+                      </td>
+                      <td className="px-4 py-3">
+                        <button
+                          className="text-slate-700 dark:text-slate-200 underline underline-offset-4 hover:opacity-80"
+                          onClick={() => openLogs(row.session)}
+                          title="View logs"
+                        >
+                          {row.logCount}
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         {/* Logs Modal */}
         {openFor && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Overlay */}
             <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={closeLogs} />
-            <div className="relative w-full max-w-3xl max-h-[80dvh] overflow-hidden rounded-2xl bg-white dark:bg-slate-900 ring-1 ring-slate-200 dark:ring-slate-800 shadow-xl">
-              <div className="flex items-center justify-between px-5 py-3 border-b border-slate-200 dark:border-slate-800">
+
+            {/* Modal */}
+            <div className="relative w-full max-w-3xl max-h-[80dvh] rounded-2xl bg-white dark:bg-slate-900 ring-1 ring-slate-200 dark:ring-slate-800 shadow-xl flex flex-col">
+              <div className="flex items-center justify-between px-5 py-3 border-b border-slate-200 dark:border-slate-800 flex-shrink-0">
                 <div className="font-semibold">Logs — {openFor}</div>
                 <button onClick={closeLogs} className="rounded-lg px-2 py-1 hover:bg-slate-100 dark:hover:bg-slate-800">
                   Close
                 </button>
               </div>
-              <div className="p-5 overflow-y-auto">
+
+              {/* Body with scroll */}
+              <div
+                className="p-5 overflow-y-auto flex-1 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:rounded-full
+                            [&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-track]:bg-neutral-700 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500"
+              >
                 {loadingLogs ? (
-                  <div className="text-slate-500">Loading logs…</div>
+                  <div className="shimmer-text">Loading</div>
                 ) : logsErr ? (
                   <div className="text-rose-600">{logsErr}</div>
                 ) : logs.length === 0 ? (
