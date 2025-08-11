@@ -1,26 +1,63 @@
 'use client'
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
+const MAX_LEN = 5
+
 export default function Page() {
-  const [code, setCode] = useState('')
-  const [submitting, setSubmitting] = useState(false)
   const router = useRouter()
 
-  const go = useCallback(() => {
-    const trimmed = code.trim()
-    if (!trimmed) return
+  const [code, setCode] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [errorMsg, setErrorMsg] = useState<string>('')
+  const [errorVisible, setErrorVisible] = useState(false)
+
+  useEffect(() => {
+    if (!errorMsg) {
+      setErrorVisible(false)
+      return
+    }
+    setErrorVisible(false)
+    const t = requestAnimationFrame(() => setErrorVisible(true))
+    return () => cancelAnimationFrame(t)
+  }, [errorMsg])
+
+  const checkSessionExists = async (session: string) => {
+    try {
+      const res = await fetch(`/api/sessions/${encodeURIComponent(session)}`, { cache: 'no-store' })
+      if (res.status === 200) return true
+      if (res.status === 404) return false
+      throw new Error(await res.text().catch(() => res.statusText))
+    } catch (e: any) {
+      throw e
+    }
+  }
+
+  const go = useCallback(async () => {
+    const trimmed = code.trim().toUpperCase()
+    if (trimmed.length !== MAX_LEN) return
+
+    setErrorMsg('')
     setSubmitting(true)
-    // Small delay for UX so the disabled state is visible
-    setTimeout(() => {
-      router.push(`/dashboard/${encodeURIComponent(trimmed.toUpperCase())}`)
-    }, 30)
+
+    try {
+      const exists = await checkSessionExists(trimmed)
+      if (exists) {
+        router.push(`/dashboard/${encodeURIComponent(trimmed)}`)
+        return
+      }
+      setErrorMsg('Session not found. Check the code and try again.')
+    } catch {
+      setErrorMsg('Unable to reach the server. Please try again later.')
+    } finally {
+      setSubmitting(false)
+    }
   }, [code, router])
 
   const handlePasteClick = useCallback(async () => {
     try {
       const text = await navigator.clipboard.readText()
-      if (text) setCode(text.trim().slice(0, 6))
+      if (text) setCode(text.trim().toUpperCase().slice(0, MAX_LEN))
     } catch (e) {
       console.warn('Clipboard paste failed', e)
     }
@@ -51,7 +88,7 @@ export default function Page() {
               <input
                 id="session-code"
                 value={code}
-                onChange={(e) => setCode(e.target.value.slice(0, 6))}
+                onChange={(e) => setCode(e.target.value.slice(0, MAX_LEN))}
                 placeholder="session code"
                 autoComplete="one-time-code"
                 inputMode="text"
@@ -59,7 +96,7 @@ export default function Page() {
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     e.preventDefault()
-                    if (code.trim().length === 6) go()
+                    if (code.trim().length === MAX_LEN) go()
                   }
                 }}
               />
@@ -85,15 +122,38 @@ export default function Page() {
 
             <button
               type="submit"
-              disabled={code.trim().length !== 6 || submitting}
-              className="w-full rounded-2xl py-3 font-medium ring-offset-2 focus:ring-2 focus:ring-slate-400 dark:focus:ring-slate-600 transition disabled:opacity-50 disabled:cursor-not-allowed bg-slate-900 text-white hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
+              disabled={code.trim().length !== MAX_LEN || submitting}
+              className="w-full rounded-2xl py-3 font-medium ring-offset-2 focus:ring-2 focus:ring-slate-400 dark:focus:ring-slate-600 transition disabled:opacity-50 disabled:cursor-not-allowed bg-slate-900 text-white hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white flex items-center justify-center"
             >
-              {submitting ? 'Opening…' : 'View dashboard'}
+              {submitting ? (
+                <span className="h-5 w-5 rounded-full border-2 border-black/60 border-t-transparent animate-spin" />
+              ) : (
+                'View dashboard'
+              )}
             </button>
           </form>
 
           <div className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-            Note: The code should be exactly 6 characters long
+            Note: The code should be exactly {MAX_LEN} characters long
+          </div>
+
+          <div
+            className={`transition-[grid-template-rows] duration-300 grid ${
+              errorMsg ? 'grid-rows-[1fr] mt-2' : 'grid-rows-[0fr] mt-0'
+            }`}
+            aria-live="polite"
+          >
+            <div className="min-h-0 overflow-hidden">
+              <div
+                role="alert"
+                className={`text-sm font-medium rounded-xl border px-3 py-2
+                  border-rose-300/60 bg-rose-50/80 text-rose-700
+                  dark:border-rose-800/60 dark:bg-rose-900/30 dark:text-rose-300
+                  transition-opacity duration-300 ${errorMsg ? 'opacity-100' : 'opacity-0'}`}
+              >
+                {errorMsg}
+              </div>
+            </div>
           </div>
         </div>
       </div>

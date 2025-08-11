@@ -1,9 +1,8 @@
-// app/s/[session]/page.tsx
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
-
-type StatusKind = 'alert' | 'normal' | 'stopped'
+import { use, useEffect, useMemo, useRef, useState } from 'react'
+import { useSession } from '@/hooks/useSession'
+import type { StatusKind, DashboardPayload } from '@/lib/types'
 
 type StatusPayload = {
   session: string
@@ -42,7 +41,6 @@ function useTicker(intervalMs = 30000) {
 }
 
 // ---- dummy data (fallback) -------------------------------------------------
-// You can remove this once your GET /api/sessions/[session] is wired up.
 function useDummy(session: string): StatusPayload {
   const start = useMemo(() => Date.now() - 1000 * 60 * 87 - 1000 * 30, []) // ~1hr 27mins 30s ago
   const [state, setState] = useState<StatusPayload>({
@@ -183,7 +181,12 @@ function LogBox({ items }: { items: string[] }) {
   }, [displayItems])
 
   return (
-    <div ref={ref} className="h-80 overflow-y-auto rounded-xl bg-white/60 dark:bg-slate-900/30 p-3">
+    <div
+      ref={ref}
+      className="h-80 overflow-y-auto rounded-xl bg-white/60 dark:bg-slate-900/30 p-3 
+      [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-gray-100 [&::-webkit-scrollbar-thumb]:rounded-full
+      [&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-track]:bg-neutral-700 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500"
+    >
       <ul className="space-y-2 text-sm leading-tight text-slate-800 dark:text-slate-200">
         {displayItems.map((t, i) => {
           // Calculate the actual index in the original array
@@ -208,20 +211,14 @@ function LogBox({ items }: { items: string[] }) {
 
 // ---- page ------------------------------------------------------------------
 
-export default function SessionPage({ params }: { params: { session: string } }) {
-  const session = decodeURIComponent(params.session)
+export default function SessionPage({ params }: { params: Promise<{ session: string }> }) {
+  const { session } = use(params)
+  const { data, error, isLoading } = useSession(session)
 
-  // TODO: swap this dummy hook for your real fetcher (e.g., SWR to /api/sessions/[session])
-  const data = useDummy(session)
-
-  // Ensure sensible fallbacks if API hasn't set them yet
-  const startAt = data.startAt ?? Date.now() - 45_000 // pretend it started <1min ago
-  const totalMatches = data.totalMatches ?? 0
-  const status = (data.status ?? 'alert') as StatusKind
-  const allLogs = data.logs ?? []
-
-  // Keep all logs but show a rail that easily displays ~10 at a glance; newest at the end.
-  const logs = allLogs
+  const startAt = data?.startAt ?? undefined
+  const totalMatches = data?.totalMatches ?? 0
+  const status = (data?.status ?? 'alert') as StatusKind
+  const logs = data?.logs?.map((l) => `${new Date(l.ts).toLocaleTimeString()} — ${l.level}: ${l.message}`) ?? []
 
   return (
     <main className="min-h-dvh bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900 p-6">
@@ -232,24 +229,38 @@ export default function SessionPage({ params }: { params: { session: string } })
           <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">
             Session: <span className="text-slate-600 dark:text-slate-300">{session}</span>
           </h1>
+          <p className="text-sm text-slate-500 mt-1">
+            {isLoading
+              ? 'Loading…'
+              : (error as any)?.status === 404
+              ? 'Session not found. Check the session code.'
+              : error
+              ? 'API error. Please try again.'
+              : ''}
+          </p>
         </div>
 
         {/* top widgets */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {/* total matches */}
           <WidgetCard title="Total matches">
-            <BigNumber value={totalMatches} />
+            <BigNumber value={isLoading ? '—' : totalMatches} />
           </WidgetCard>
 
           {/* total time (live label) */}
           <WidgetCard title="Total time" right={<LiveDot />}>
-            <TimeLive startAt={startAt} />
+            {startAt ? <TimeLive startAt={startAt} /> : <div className="text-slate-400">—</div>}
           </WidgetCard>
 
           {/* status — big, obvious */}
           <div className="md:col-span-2">
             <WidgetCard title="Status">
-              <StatusPill status={status} />
+              {/* show skeleton-ish while loading */}
+              {isLoading ? (
+                <div className="rounded-2xl mt-2 px-5 py-6 w-full bg-slate-100 dark:bg-slate-800 animate-pulse" />
+              ) : (
+                <StatusPill status={status} />
+              )}
             </WidgetCard>
           </div>
         </div>
@@ -257,7 +268,11 @@ export default function SessionPage({ params }: { params: { session: string } })
         {/* log box */}
         <WidgetCard title="Logs">
           <div className="w-full">
-            <LogBox items={logs} />
+            {isLoading ? (
+              <div className="h-80 rounded-xl bg-slate-100 dark:bg-slate-800 animate-pulse" />
+            ) : (
+              <LogBox items={logs} />
+            )}
           </div>
         </WidgetCard>
       </div>

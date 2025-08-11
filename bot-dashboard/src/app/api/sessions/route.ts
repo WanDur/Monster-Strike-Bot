@@ -11,7 +11,8 @@ export async function POST(req: NextRequest) {
   try {
     body = await req.json()
   } catch {}
-  const session = String(body?.session ?? randomId()).trim()
+
+  const session = randomId().trim().slice(0, 5)
   const now = Date.now()
   const writeToken = randomToken()
 
