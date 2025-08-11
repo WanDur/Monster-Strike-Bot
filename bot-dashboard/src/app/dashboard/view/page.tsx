@@ -57,7 +57,11 @@ function StatusBadge({ s }: { s: StatusKind }) {
     stopped: 'bg-rose-50 text-rose-700 ring-rose-300/60 dark:bg-rose-900/20 dark:text-rose-300 dark:ring-rose-700/40'
   }
   return (
-    <span className={`inline-flex items-center px-2 py-1 rounded-lg text-xs font-medium ring-2 ${map[s]}`}>{s}</span>
+    <span
+      className={`inline-flex min-w-15 justify-center items-center px-2 py-1 rounded-lg text-xs font-medium ring-2 ${map[s]}`}
+    >
+      {s}
+    </span>
   )
 }
 

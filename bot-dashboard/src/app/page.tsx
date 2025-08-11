@@ -68,7 +68,7 @@ export default function Page() {
       <div className="w-full max-w-md">
         <div className="relative rounded-3xl shadow-xl shadow-slate-200/60 dark:shadow-black/40 ring-1 ring-slate-200 dark:ring-slate-800 bg-white/80 dark:bg-slate-900/70 backdrop-blur p-6 sm:p-7 space-y-6">
           <header className="space-y-2">
-            <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">Connect to your bot session</h1>
+            <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">Connect to your bot</h1>
             <p className="text-sm text-slate-600 dark:text-slate-400">
               You can find the session code in <span className="font-bold">ms-bot.exe</span>
             </p>
@@ -156,7 +156,34 @@ export default function Page() {
             </div>
           </div>
         </div>
+
+        {/* GitHub logo link */}
+        <div className="flex justify-center mt-4">
+          <a
+            href="https://github.com/WanDur/Monster-Strike-Bot"
+            target="_blank"
+            className="inline-flex items-center gap-2 hover:opacity-80 transition"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+              <path
+                fillRule="evenodd"
+                d="M12 .5C5.37.5 0 5.87 0 12.5c0 5.29 3.438 9.772 8.205 11.36.6.11.82-.26.82-.577
+              0-.285-.01-1.04-.015-2.04-3.338.726-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.756-1.333-1.756-1.09-.745.083-.73.083-.73
+              1.205.085 1.84 1.236 1.84 1.236 1.07 1.834 2.807 1.303 3.492.997.108-.775.42-1.303.763-1.603-2.665-.305-5.466-1.334-5.466-5.933
+              0-1.31.468-2.38 1.236-3.22-.124-.305-.536-1.53.117-3.188 0 0 1.008-.322 3.3 1.23a11.52 11.52 0 0 1 3-.404
+              c1.02.005 2.047.138 3 .404 2.29-1.552 3.297-1.23 3.297-1.23.655 1.658.243 2.883.12 3.188.77.84 1.235 1.91
+              1.235 3.22 0 4.61-2.804 5.625-5.475 5.922.43.37.823 1.096.823 2.21
+              0 1.596-.015 2.884-.015 3.277 0 .32.218.694.825.576C20.565 22.27 24 17.788 24 12.5
+              24 5.87 18.627.5 12 .5z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <span className="text-sm font-medium">View on GitHub</span>
+          </a>
+        </div>
       </div>
+
+      <div className="absolute bottom-4 text-sm text-slate-500 dark:text-slate-500">Version: beta</div>
     </main>
   )
 }
