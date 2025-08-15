@@ -8,16 +8,11 @@ export const runtime = 'nodejs'
 
 export async function POST(req: NextRequest) {
   const r = await getRedis()
-  let body: any = {}
-  try {
-    body = await req.json()
-  } catch {}
 
   const session = randomId().trim()
   const now = Date.now()
   const writeToken = randomToken()
 
-  // Create hash + aux keys
   await r.hSet(kSess(session), {
     startAt: String(now),
     updatedAt: String(now),
