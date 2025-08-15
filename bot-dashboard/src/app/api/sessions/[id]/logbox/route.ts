@@ -1,3 +1,4 @@
+/* /api/sessions/:id/logbox */
 import { NextRequest, NextResponse } from 'next/server'
 import { getRedis } from '@/lib/redis'
 import { kSess, kIdem, kLogs, kStatus } from '@/lib/keys'

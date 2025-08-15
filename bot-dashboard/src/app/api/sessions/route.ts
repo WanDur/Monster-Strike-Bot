@@ -1,3 +1,4 @@
+/* /api/sessions */
 import { NextRequest, NextResponse } from 'next/server'
 import { getRedis } from '@/lib/redis'
 import { randomId, randomToken } from '@/lib/auth'
@@ -12,7 +13,7 @@ export async function POST(req: NextRequest) {
     body = await req.json()
   } catch {}
 
-  const session = randomId().trim().slice(0, 5)
+  const session = randomId().trim()
   const now = Date.now()
   const writeToken = randomToken()
 

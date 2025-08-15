@@ -11,7 +11,7 @@ export type SessionRecord = {
   updatedAt: number
   totalMatches: number
   status: StatusKind
-  writeToken?: string // stored on server, not returned to GET
+  writeToken?: string
 }
 
 export type DashboardPayload = {

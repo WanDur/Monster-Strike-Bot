@@ -1,5 +1,5 @@
 'use client'
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 
 const MAX_LEN = 5
@@ -11,6 +11,8 @@ export default function Page() {
   const [submitting, setSubmitting] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string>('')
   const [errorVisible, setErrorVisible] = useState(false)
+
+  const missingSessionsRef = useRef<Set<string>>(new Set())
 
   useEffect(() => {
     if (!errorMsg) {
@@ -37,6 +39,12 @@ export default function Page() {
     const trimmed = code.trim().toUpperCase()
     if (trimmed.length !== MAX_LEN) return
 
+    // early return if missing session is cached
+    if (missingSessionsRef.current.has(trimmed)) {
+      setErrorMsg('Session not found. Check the code and try again.')
+      return
+    }
+
     setErrorMsg('')
     setSubmitting(true)
 
@@ -46,6 +54,9 @@ export default function Page() {
         router.push(`/dashboard/${encodeURIComponent(trimmed)}`)
         return
       }
+
+      missingSessionsRef.current.add(trimmed)
+
       setErrorMsg('Session not found. Check the code and try again.')
     } catch {
       setErrorMsg('Unable to reach the server. Please try again later.')
@@ -178,7 +189,7 @@ export default function Page() {
                 clipRule="evenodd"
               />
             </svg>
-            <span className="text-sm font-medium">View on GitHub</span>
+            <span className="text-sm font-medium">View Source</span>
           </a>
         </div>
       </div>

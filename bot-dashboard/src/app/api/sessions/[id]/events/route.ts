@@ -1,3 +1,4 @@
+/* /api/sessions/:id/events */
 import { NextRequest, NextResponse } from 'next/server'
 import { getRedis } from '@/lib/redis'
 import { kSess, kIdem, kMatches, kLogs, kStatus } from '@/lib/keys'

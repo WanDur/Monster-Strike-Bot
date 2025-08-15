@@ -1,12 +1,18 @@
 import crypto from 'crypto'
 
-export function randomId(n = 8) {
+/**
+ * Generate a random ID. Default length is 5.
+ */
+export function randomId(n = 5) {
   const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
   let s = ''
   for (let i = 0; i < n; i++) s += alphabet[Math.floor(Math.random() * alphabet.length)]
   return s
 }
 
+/**
+ * Generate a random token.
+ */
 export function randomToken() {
   return crypto.randomBytes(24).toString('hex')
 }
