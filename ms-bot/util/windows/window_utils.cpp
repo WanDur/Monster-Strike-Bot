@@ -1,4 +1,4 @@
-﻿#include "window_enumeration.h"
+﻿#include "window_utils.h"
 #include "../util/encoding.h"
 #include <Windows.h>
 #include <algorithm>

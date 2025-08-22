@@ -19,12 +19,6 @@
     <Filter Include="imgui\backends">
       <UniqueIdentifier>{cdfc7151-3ab7-4735-abf0-bd9cec93e594}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\platform">
-      <UniqueIdentifier>{df4196e7-f551-4e85-9454-5521d47930bb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\platform">
-      <UniqueIdentifier>{da59b0dd-1526-4b09-b4b9-7d2a319e0af8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\util">
       <UniqueIdentifier>{863b8cb1-5767-489a-ab53-1890779c7819}</UniqueIdentifier>
     </Filter>
@@ -39,6 +33,12 @@
     </Filter>
     <Filter Include="spinner">
       <UniqueIdentifier>{6d842da9-52a5-46e7-b80e-16a10713e345}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\util\windows">
+      <UniqueIdentifier>{41c0ed6c-4c7d-41f0-a44f-9dc0b47b823b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\util\windows">
+      <UniqueIdentifier>{cc98cb98-f690-4885-9f72-3df7cd411893}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -65,9 +65,6 @@
     </ClInclude>
     <ClInclude Include="imgui\backends\imgui_impl_win32.h">
       <Filter>imgui\backends</Filter>
-    </ClInclude>
-    <ClInclude Include="platform\window_enumeration.h">
-      <Filter>Header Files\platform</Filter>
     </ClInclude>
     <ClInclude Include="util\encoding.h">
       <Filter>Header Files\util</Filter>
@@ -114,6 +111,9 @@
     <ClInclude Include="util\session.h">
       <Filter>Header Files\util</Filter>
     </ClInclude>
+    <ClInclude Include="util\windows\window_utils.h">
+      <Filter>Header Files\util\windows</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="imgui\imgui.cpp">
@@ -139,9 +139,6 @@
     </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="platform\window_enumeration.cpp">
-      <Filter>Source Files\platform</Filter>
     </ClCompile>
     <ClCompile Include="util\encoding.cpp">
       <Filter>Source Files\util</Filter>
@@ -178,6 +175,9 @@
     </ClCompile>
     <ClCompile Include="util\session.cpp">
       <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="util\windows\window_utils.cpp">
+      <Filter>Source Files\util\windows</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

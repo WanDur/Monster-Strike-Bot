@@ -1,7 +1,7 @@
 ﻿#include "emulator_control.h"
 #include "botconfig.h"
-#include "../platform/window_enumeration.h"
 #include "../util/encoding.h"
+#include "../util/windows/window_utils.h"
 #include <array>
 #include <optional>
 #include <string>

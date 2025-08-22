@@ -78,43 +78,6 @@ void LoadStyle(float scale = 1.0f)
     s.ScrollbarSize = 14.0f;
 }
 
-static void DrawButtons(bot::Config& gCfg, bool& startPressed, std::vector<LogEntry>& logs)
-{
-    const ImVec2 btnSize(140, 0); 
-    static std::vector<std::string> win_titles;
-
-    startPressed = ImGui::Button("Start", btnSize);
-
-    ImGui::SameLine();
-
-    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.95f, 0.45f, 0.45f, 1.00f));
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.00f, 0.55f, 0.55f, 1.00f));
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.90f, 0.40f, 0.40f, 1.00f));
-    if (ImGui::Button("Stop", btnSize))
-    {
-        ImGui::OpenPopup("Confirm Stop");
-    }
-    ImGui::PopStyleColor(3);
-
-    // ----- Modal confirmation -------------------------------------------------
-    if (ImGui::BeginPopupModal("Confirm Stop", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove))
-    {
-        ImGui::Text("Are you sure you want to stop?");
-        ImGui::Spacing();
-        if (ImGui::Button("Yes", ImVec2(100, 0)))
-        {
-            // TODO: stop logic
-            ImGui::CloseCurrentPopup();
-        }
-        ImGui::SameLine();
-        if (ImGui::Button("No", ImVec2(100, 0)))
-            ImGui::CloseCurrentPopup();
-
-        ImGui::EndPopup();
-    }
-    
-}
-
 // Main code
 int main(int, char**)
 {
@@ -191,9 +154,6 @@ int main(int, char**)
     ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dDeviceContext);
 
     // Load Fonts
-    // - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
-    // - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select the font among multiple.
-    // - If the file cannot be loaded, the function will return a nullptr. Please handle those errors in your application (e.g. use an assertion, or display an error and quit).
     // - Use '#define IMGUI_ENABLE_FREETYPE' in your imconfig file to use Freetype for higher quality font rendering.
     // - Read 'docs/FONTS.md' for more instructions and details.
     // - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
@@ -223,17 +183,13 @@ int main(int, char**)
     bool show_demo_window = false;
     bool show_main_window = true;
 
-    static bool show_list_win = false;
-    static bool confirm_stop = false;
-    static bool startPressed = false;
-
     static int total_matches = 0;
     static int item_selected_idx = 0;
     static std::vector<std::string> win_titles;
 
     static bot::Config gCfg;
     if (!gCfg.load()) {
-        std::puts("Config not found or malformed – using defaults.");
+        std::puts("Using default config.");
         gCfg.save();
     }
 
@@ -307,13 +263,26 @@ int main(int, char**)
             {
                 if (ImGui::BeginMenu("Tools"))
                 {
-                    if (ImGui::MenuItem("Check Emulator")) {
+                    if (ImGui::BeginMenu("Select Emulator")) {
                         win_titles = windows::enumerateAltTabWindows();
                         if (win_titles.empty())
                         {
                             logs.emplace_back("INFO", "No emulator window found", "Make sure your emulator is running");
                         }
-                        else show_list_win = true;
+                        else
+                        {
+                            for (size_t i=0;i<win_titles.size(); ++i)
+                            {
+								std::string windowName = win_titles[i];
+                                if (windowName.length() > 20) windowName = windowName.substr(0, 20) + "...";
+                                if (ImGui::MenuItem(windowName.c_str()))
+                                {
+                                    gCfg.emulatorName = win_titles[i];
+                                    gCfg.save();
+                                }
+							}
+                        }
+                        ImGui::EndMenu();
                     }
                     ImGui::EndMenu();
                 }
@@ -371,9 +340,11 @@ int main(int, char**)
             // #endregion second row
 
             // three buttons and the popup for window list
-			DrawButtons(gCfg, startPressed, logs);
+            const ImVec2 btnSize(140, 0);
+            static std::vector<std::string> win_titles;
 
-            if (startPressed)
+            ImGui::BeginDisabled(!sessionState.sessionId.empty());
+            if (ImGui::Button("Start", btnSize))
             {
                 if (bot::isEmulatorOpened(gCfg))
                 {
@@ -382,9 +353,36 @@ int main(int, char**)
                 else
                 {
                     logs.emplace_back("INFO", "Can't find your emulator",
-                        "1. Make sure to open the emulator\n2. If it's already opened but it still won't start, press Tools > Check Emulator\n3. Select the correct window name for your emulator manually");
+                        "1. Make sure to open the emulator\n2. If it's already opened but it still won't start, press Tools > Select Emulator\n3. Select the correct window name for your emulator manually");
                 }
-				startPressed = false;
+            }
+            ImGui::EndDisabled();
+
+            ImGui::SameLine();
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.95f, 0.45f, 0.45f, 1.00f));
+            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.00f, 0.55f, 0.55f, 1.00f));
+            ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.90f, 0.40f, 0.40f, 1.00f));
+            if (ImGui::Button("Stop (ctrl+c)", btnSize))
+            {
+                ImGui::OpenPopup("Confirm Stop");
+            }
+            ImGui::PopStyleColor(3);
+
+            // ----- Modal confirmation -------------------------------------------------
+            if (ImGui::BeginPopupModal("Confirm Stop", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove))
+            {
+                ImGui::Text("Are you sure you want to stop?");
+                ImGui::Spacing();
+                if (ImGui::Button("Yes", ImVec2(100, 0)))
+                {
+                    // TODO: stop logic
+                    ImGui::CloseCurrentPopup();
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("No", ImVec2(100, 0)))
+                    ImGui::CloseCurrentPopup();
+
+                ImGui::EndPopup();
             }
 
             if (sessionState.creating.load())
@@ -421,32 +419,6 @@ int main(int, char**)
             }
             if (msg) {
                 std::cout << "Session result: " << *msg << std::endl;
-            }
-
-            if (show_list_win) {
-                ImGui::SetNextWindowSizeConstraints(ImVec2(150.0f, -1.0f), ImVec2(FLT_MAX, FLT_MAX));
-                ImGui::Begin("Click to select", &show_list_win, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDocking);
-
-                if (ImGui::Button("Refresh")) {
-                    win_titles = windows::enumerateAltTabWindows();
-                }
-                ImGui::Separator();
-
-                int idx = 0;
-                for (const auto& t : win_titles)
-                {
-                    ImGui::PushID(idx);
-                    if (ImGui::Selectable(t.c_str(), false, ImGuiSelectableFlags_DontClosePopups)) {
-                        // on selection
-                        gCfg.emulatorName = t;
-                        gCfg.save();
-                        show_list_win = false;
-                    }
-                    ImGui::PopID();
-                    ++idx;
-                }
-
-                ImGui::End();
             }
 
             // #region LogBox
