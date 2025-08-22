@@ -42,7 +42,7 @@ Creates a new session on the server.
 
 ```ts
 {
-  "sessionId": string,
+  "session": string,
   "startAt": Timestamp,
   "writeToken": string
 }

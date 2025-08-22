@@ -114,7 +114,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d11.lib;dxgi.lib;windowsapp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -131,12 +131,16 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>d3d11.lib;dxgi.lib;windowsapp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="bot\botconfig.h" />
+    <ClInclude Include="bot\click.h" />
     <ClInclude Include="bot\emulator_control.h" />
+    <ClInclude Include="bot\session_controller.h" />
+    <ClInclude Include="bot\ui_match.h" />
+    <ClInclude Include="bot\ui_templates.h" />
     <ClInclude Include="imgui\backends\imgui_impl_dx11.h" />
     <ClInclude Include="imgui\backends\imgui_impl_win32.h" />
     <ClInclude Include="imgui\imconfig.h" />
@@ -147,11 +151,22 @@
     <ClInclude Include="imgui\imstb_truetype.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="platform\window_enumeration.h" />
+    <ClInclude Include="spinner\cimspinner.h" />
+    <ClInclude Include="spinner\cimspinner_config.h" />
+    <ClInclude Include="spinner\imspinner.h" />
+    <ClInclude Include="util\capture.h" />
+    <ClInclude Include="util\http_client.h" />
+    <ClInclude Include="util\image_io.h" />
     <ClInclude Include="util\encoding.h" />
+    <ClInclude Include="util\session.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="bot\botconfig.cpp" />
+    <ClCompile Include="bot\click.cpp" />
     <ClCompile Include="bot\emulator_control.cpp" />
+    <ClCompile Include="bot\session_controller.cpp" />
+    <ClCompile Include="bot\ui_match.cpp" />
+    <ClCompile Include="bot\ui_templates.cpp" />
     <ClCompile Include="imgui\backends\imgui_impl_dx11.cpp" />
     <ClCompile Include="imgui\backends\imgui_impl_win32.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
@@ -161,7 +176,12 @@
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="platform\window_enumeration.cpp" />
+    <ClCompile Include="spinner\cimspinner.cpp" />
+    <ClCompile Include="util\capture.cpp" />
+    <ClCompile Include="util\http_client.cpp" />
+    <ClCompile Include="util\image_io.cpp" />
     <ClCompile Include="util\encoding.cpp" />
+    <ClCompile Include="util\session.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

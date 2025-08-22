@@ -37,6 +37,9 @@
     <Filter Include="Source Files\bot">
       <UniqueIdentifier>{8a263b9a-fceb-4405-ac3b-0dc527656ac9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="spinner">
+      <UniqueIdentifier>{6d842da9-52a5-46e7-b80e-16a10713e345}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\imconfig.h">
@@ -78,6 +81,39 @@
     <ClInclude Include="main.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="util\capture.h">
+      <Filter>Header Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="util\image_io.h">
+      <Filter>Header Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="bot\click.h">
+      <Filter>Header Files\bot</Filter>
+    </ClInclude>
+    <ClInclude Include="bot\ui_match.h">
+      <Filter>Header Files\bot</Filter>
+    </ClInclude>
+    <ClInclude Include="bot\ui_templates.h">
+      <Filter>Header Files\bot</Filter>
+    </ClInclude>
+    <ClInclude Include="spinner\cimspinner.h">
+      <Filter>spinner</Filter>
+    </ClInclude>
+    <ClInclude Include="spinner\cimspinner_config.h">
+      <Filter>spinner</Filter>
+    </ClInclude>
+    <ClInclude Include="spinner\imspinner.h">
+      <Filter>spinner</Filter>
+    </ClInclude>
+    <ClInclude Include="bot\session_controller.h">
+      <Filter>Header Files\bot</Filter>
+    </ClInclude>
+    <ClInclude Include="util\http_client.h">
+      <Filter>Header Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="util\session.h">
+      <Filter>Header Files\util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="imgui\imgui.cpp">
@@ -115,6 +151,33 @@
     </ClCompile>
     <ClCompile Include="bot\emulator_control.cpp">
       <Filter>Source Files\bot</Filter>
+    </ClCompile>
+    <ClCompile Include="util\capture.cpp">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="util\image_io.cpp">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="bot\click.cpp">
+      <Filter>Source Files\bot</Filter>
+    </ClCompile>
+    <ClCompile Include="bot\ui_match.cpp">
+      <Filter>Source Files\bot</Filter>
+    </ClCompile>
+    <ClCompile Include="bot\ui_templates.cpp">
+      <Filter>Source Files\bot</Filter>
+    </ClCompile>
+    <ClCompile Include="spinner\cimspinner.cpp">
+      <Filter>spinner</Filter>
+    </ClCompile>
+    <ClCompile Include="bot\session_controller.cpp">
+      <Filter>Source Files\bot</Filter>
+    </ClCompile>
+    <ClCompile Include="util\http_client.cpp">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="util\session.cpp">
+      <Filter>Source Files\util</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

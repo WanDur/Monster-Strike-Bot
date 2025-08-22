@@ -1,12 +1,20 @@
 ﻿#include <imgui/imgui.h>
 #include <imgui/backends/imgui_impl_win32.h>
 #include <imgui/backends/imgui_impl_dx11.h>
-#include "main.h"
-#include "util/encoding.h"
 #include <d3d11.h>
 #include <tchar.h>
+#include <iostream>
 
-#include "util/capture.cpp"
+#include "main.h"
+#include "util/encoding.h"
+#include "util/capture.h"
+#include "util/session.h"
+#include "bot/session_controller.h"
+#include "bot/ui_match.h"
+#include "bot/click.h"
+
+#define IMSPINNER_DEMO
+#include "spinner/imspinner.h"
 
 // Data
 static ID3D11Device* g_pd3dDevice = nullptr;
@@ -70,6 +78,43 @@ void LoadStyle(float scale = 1.0f)
     s.ScrollbarSize = 14.0f;
 }
 
+static void DrawButtons(bot::Config& gCfg, bool& startPressed, std::vector<LogEntry>& logs)
+{
+    const ImVec2 btnSize(140, 0); 
+    static std::vector<std::string> win_titles;
+
+    startPressed = ImGui::Button("Start", btnSize);
+
+    ImGui::SameLine();
+
+    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.95f, 0.45f, 0.45f, 1.00f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.00f, 0.55f, 0.55f, 1.00f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.90f, 0.40f, 0.40f, 1.00f));
+    if (ImGui::Button("Stop", btnSize))
+    {
+        ImGui::OpenPopup("Confirm Stop");
+    }
+    ImGui::PopStyleColor(3);
+
+    // ----- Modal confirmation -------------------------------------------------
+    if (ImGui::BeginPopupModal("Confirm Stop", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove))
+    {
+        ImGui::Text("Are you sure you want to stop?");
+        ImGui::Spacing();
+        if (ImGui::Button("Yes", ImVec2(100, 0)))
+        {
+            // TODO: stop logic
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("No", ImVec2(100, 0)))
+            ImGui::CloseCurrentPopup();
+
+        ImGui::EndPopup();
+    }
+    
+}
+
 // Main code
 int main(int, char**)
 {
@@ -126,7 +171,6 @@ int main(int, char**)
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
-    //ImGui::StyleColorsLight();
 
     // Setup scaling
     ImGuiStyle& style = ImGui::GetStyle();
@@ -180,12 +224,12 @@ int main(int, char**)
     bool show_main_window = true;
 
     static bool show_list_win = false;
-    static bool   confirm_stop = false;
+    static bool confirm_stop = false;
+    static bool startPressed = false;
 
     static int total_matches = 0;
     static int item_selected_idx = 0;
     static std::vector<std::string> win_titles;
-    static std::string session_id = "xxxxx";
 
     static bot::Config gCfg;
     if (!gCfg.load()) {
@@ -195,6 +239,11 @@ int main(int, char**)
 
     std::vector<LogEntry> logs;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
+    static util::CurlGlobal curlInit;
+    static util::HttpClient http("https://monster-strike-bot.vercel.app/api");
+    static bot::SessionController controller(http);
+    static bot::SessionState sessionState;
 
     // Main loop
     bool done = false;
@@ -239,19 +288,36 @@ int main(int, char**)
 
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
         if (show_demo_window)
+        {
+            ImSpinner::demoSpinners();
             ImGui::ShowDemoWindow(&show_demo_window);
+        }
 
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
         {
             static float f = 0.0f;
             static int counter = 0;
 
-            ImGui::SetNextWindowPos(ImVec2(50, 50), ImGuiCond_FirstUseEver);
+			// Initial window position and size
+            ImGui::SetNextWindowPos(ImVec2(screenWidth / 2 - 600, screenHeight / 2 - 450), ImGuiCond_FirstUseEver);
             ImGui::SetNextWindowSize(ImVec2(600, 450), ImGuiCond_FirstUseEver);
             ImGui::Begin("Monster Strike Bot", &show_main_window, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_MenuBar);
 
             if (ImGui::BeginMenuBar())
             {
+                if (ImGui::BeginMenu("Tools"))
+                {
+                    if (ImGui::MenuItem("Check Emulator")) {
+                        win_titles = windows::enumerateAltTabWindows();
+                        if (win_titles.empty())
+                        {
+                            logs.emplace_back("INFO", "No emulator window found", "Make sure your emulator is running");
+                        }
+                        else show_list_win = true;
+                    }
+                    ImGui::EndMenu();
+                }
+
                 if (ImGui::BeginMenu("Mode"))
                 {
                     if (ImGui::MenuItem("訓練冒險")) {}
@@ -259,90 +325,102 @@ int main(int, char**)
                     ImGui::MenuItem("more coming soon. . .", NULL, false, false);
                     ImGui::EndMenu();
                 }
-
+                
                 ImGui::EndMenuBar();
             }
 
             // #region first row
-            ImGui::TextDisabled("Session");
-            ImGui::SameLine();
-            ImGui::PushFont(latinBold);
-            ImGui::Text("%s", session_id.c_str());
-            ImGui::PopFont();
+            {
+                std::string sessionIdCopy = sessionState.sessionId;
+                sessionIdCopy = sessionState.sessionId;
+                if (sessionIdCopy.empty()) sessionIdCopy = "xxxxx";
 
-            ImGui::SameLine();
-            ImGui::Spacing();
-            ImGui::SameLine();
-            ImGui::TextDisabled("Emulator");
-            ImGui::SameLine();
-            ImGui::Text("%s", gCfg.emulatorName.empty() ? "not set" : gCfg.emulatorName.c_str());
+                ImGui::TextDisabled("Session");
+                ImGui::SameLine();
+                ImGui::PushFont(latinBold);
+                ImGui::Text("%s", sessionIdCopy.c_str());
+                ImGui::PopFont();
+                
+                if (!sessionIdCopy.empty() && sessionIdCopy != "xxxxx") {
+                    ImGui::SameLine();
+                    if (ImGui::SmallButton("Copy")) ImGui::SetClipboardText(sessionIdCopy.c_str());
+                }
 
-            ImGui::SameLine();
-            ImGui::Spacing();
-            ImGui::SameLine();
-            ImGui::TextDisabled("Mode");
-            ImGui::SameLine();
-            ImGui::Text("訓練冒險");
+                ImGui::SameLine();
+                ImGui::Spacing();
+                ImGui::SameLine();
+                ImGui::TextDisabled("Emulator");
+                ImGui::SameLine();
+                std::string displayName = gCfg.emulatorName.empty() ? "not set" : gCfg.emulatorName;
+                if (displayName.length() > 20) displayName = displayName.substr(0, 20) + "...";
+                ImGui::Text("%s", displayName.c_str());
+
+                ImGui::SameLine();
+                ImGui::Spacing();
+                ImGui::SameLine();
+                ImGui::TextDisabled("Mode");
+                ImGui::SameLine();
+                ImGui::Text("訓練冒險");
+            }
             // #endregion first row
-
+            
             // #region second row
             ImGui::TextDisabled("Matches");
             ImGui::SameLine();
             ImGui::Text("%d", total_matches);
             // #endregion second row
 
-            const ImVec2 btnSize(140, 0);
+            // three buttons and the popup for window list
+			DrawButtons(gCfg, startPressed, logs);
 
-            if (ImGui::Button("Start", btnSize))
+            if (startPressed)
             {
                 if (bot::isEmulatorOpened(gCfg))
                 {
-                    HWND emulatorHWND = windows::ensureWindowVisible(util::encoding::utf8ToWide(gCfg.emulatorName));
-                    Sleep(1000);
-                    CaptureWindowWGC(emulatorHWND, true);
-                    printf("Start bot");
+                    controller.startSession(sessionState);
                 }
-                else {
-                    logs.emplace_back("INFO", "Can't find your emulator", "1. Make sure to open the emulator\n2. If it's already opened but the bot still won't start, press Check\n3. Select the correct window title to set your emulator name manually");
+                else
+                {
+                    logs.emplace_back("INFO", "Can't find your emulator",
+                        "1. Make sure to open the emulator\n2. If it's already opened but it still won't start, press Tools > Check Emulator\n3. Select the correct window name for your emulator manually");
                 }
+				startPressed = false;
             }
 
-            ImGui::SameLine();
-
-            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.95f, 0.45f, 0.45f, 1.00f));
-            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.00f, 0.55f, 0.55f, 1.00f));
-            ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.90f, 0.40f, 0.40f, 1.00f));
-            if (ImGui::Button("Stop", btnSize))
-                ImGui::OpenPopup("Confirm Stop");
-            ImGui::PopStyleColor(3);
-
-            // ----- Modal confirmation -------------------------------------------------
-            if (ImGui::BeginPopupModal("Confirm Stop", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove))
+            if (sessionState.creating.load())
             {
-                ImGui::Text("Are you sure you want to stop?");
-                ImGui::Spacing();
-                if (ImGui::Button("Yes", ImVec2(100, 0)))
-                {
-                    // TODO: stop logic
-                    ImGui::CloseCurrentPopup();
-                }
                 ImGui::SameLine();
-                if (ImGui::Button("No", ImVec2(100, 0)))
-                    ImGui::CloseCurrentPopup();
-
-                ImGui::EndPopup();
+                ImGui::Spacing();
+                ImGui::SameLine();
+                ImSpinner::SpinnerAng("spinner", 8, 2, ImSpinner::white, ImColor(255, 255, 255, 50), 6, 4.3);
             }
 
-            ImGui::SameLine();
-
-            if (ImGui::Button("Check", btnSize))
+            if (!sessionState.creating.load())
             {
-                win_titles = windows::enumerateAltTabWindows();
-                if (win_titles.empty())
+                std::string sid;
+
+                if (!sid.empty())
                 {
-                    logs.emplace_back("INFO", "No emulator window found", "Make sure your emulator is running");
+                    HWND emulatorHWND = windows::ensureWindowVisible(util::encoding::utf8ToWide(gCfg.emulatorName));
+                    RECT rect;
+
+                    GetWindowRect(emulatorHWND, &rect);
+                    HBITMAP bmp = util::CaptureEmulatorRegion(rect, false);
+                    bot::MatchTemplateRegion(bmp, bot::MatchType::MAIN_MENU, true);
+                    bot::ClickByType(emulatorHWND, bot::MatchType::MAIN_MENU);
                 }
-                else show_list_win = true;
+            }
+
+            std::optional<std::string> msg;
+            {
+                std::lock_guard<std::mutex> lk(sessionState.mtx);
+                if (sessionState.lastResult) {
+                    msg = std::move(sessionState.lastResult); // move out
+                    sessionState.lastResult.reset();          // clear after consuming
+                }
+            }
+            if (msg) {
+                std::cout << "Session result: " << *msg << std::endl;
             }
 
             if (show_list_win) {
@@ -352,11 +430,9 @@ int main(int, char**)
                 if (ImGui::Button("Refresh")) {
                     win_titles = windows::enumerateAltTabWindows();
                 }
-
-                ImGui::Separator(); 
+                ImGui::Separator();
 
                 int idx = 0;
-
                 for (const auto& t : win_titles)
                 {
                     ImGui::PushID(idx);
@@ -372,7 +448,6 @@ int main(int, char**)
 
                 ImGui::End();
             }
-
 
             // #region LogBox
             ImGui::BeginChild("LogBox", ImVec2(0, 0), true,
