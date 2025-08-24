@@ -81,9 +81,6 @@
     <ClInclude Include="util\capture.h">
       <Filter>Header Files\util</Filter>
     </ClInclude>
-    <ClInclude Include="util\image_io.h">
-      <Filter>Header Files\util</Filter>
-    </ClInclude>
     <ClInclude Include="bot\click.h">
       <Filter>Header Files\bot</Filter>
     </ClInclude>
@@ -113,6 +110,9 @@
     </ClInclude>
     <ClInclude Include="util\windows\window_utils.h">
       <Filter>Header Files\util\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="bot\runner.h">
+      <Filter>Header Files\bot</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -152,9 +152,6 @@
     <ClCompile Include="util\capture.cpp">
       <Filter>Source Files\util</Filter>
     </ClCompile>
-    <ClCompile Include="util\image_io.cpp">
-      <Filter>Source Files\util</Filter>
-    </ClCompile>
     <ClCompile Include="bot\click.cpp">
       <Filter>Source Files\bot</Filter>
     </ClCompile>
@@ -178,6 +175,9 @@
     </ClCompile>
     <ClCompile Include="util\windows\window_utils.cpp">
       <Filter>Source Files\util\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="bot\runner.cpp">
+      <Filter>Source Files\bot</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -1,10 +1,7 @@
 #include "capture.h"
-#include "image_io.h"
-#include <windows.h>
 
 namespace util 
 {
-
     HBITMAP CaptureEmulatorRegion(const RECT& emulatorRect, bool debug) 
     {
         int w = emulatorRect.right - emulatorRect.left;
@@ -39,8 +36,7 @@ namespace util
         DeleteDC(hdcMem);
         ReleaseDC(nullptr, hdcScreen);
 
-        if (debug) util::SaveHBITMAPAsBMP(hbm, util::UniqueBmpPath());
+        if (debug) win::SaveHBITMAPAsBMP(hbm, win::UniqueBmpPath());
         return hbm;
     }
-
 } 

@@ -1,10 +1,12 @@
 #include "ui_match.h"
-#include "../util/image_io.h"
+#include "../util/windows/window_utils.h"
 #include <vector>
 #include <iostream>
 #include <algorithm>
 #include <cstdint>
 #include <cmath>
+
+namespace win_util = util::win;
 
 namespace bot 
 {
@@ -79,7 +81,9 @@ namespace bot
         std::cout << "cropped: " << x1 << "x" << y1 << ", "
             << x2 << "x" << y2 << ", mean: "
             << meanR << "," << meanG << "," << meanB;
-        if (hasTarget) {
+
+        if (hasTarget) 
+        {
             std::cout << ", target: "
                 << int(T->targetR) << "," << int(T->targetG) << "," << int(T->targetB)
                 << " tol=" << T->tolerance
@@ -106,11 +110,10 @@ namespace bot
                     const uint8_t* src = srcRow + static_cast<size_t>(x1) * 4;
                     std::memcpy(dst + static_cast<size_t>(y) * CW * 4, src, static_cast<size_t>(CW) * 4);
                 }
-                util::SaveHBITMAPAsBMP(crop, util::UniqueBmpPath());
+                win_util::SaveHBITMAPAsBMP(crop, win_util::UniqueBmpPath());
                 DeleteObject(crop);
             }
             ReleaseDC(nullptr, sdc);
         }
     }
-
 } 

@@ -16,12 +16,12 @@ namespace bot
 
         /* If we already know the title, just test it */
         if (!cfg.emulatorName.empty())
-            return windows::isWindowOpen(util::encoding::utf8ToWide(cfg.emulatorName));
+            return util::win::isWindowOpen(util::encoding::utf8ToWide(cfg.emulatorName));
 
         /* 2. Otherwise use the default list */
         for (const auto& title : kDefaults)
         {
-            if (windows::isWindowOpen(title))
+            if (util::win::isWindowOpen(title))
             {
                 cfg.emulatorName = util::encoding::wideToUtf8(std::wstring{ title });
                 cfg.save();

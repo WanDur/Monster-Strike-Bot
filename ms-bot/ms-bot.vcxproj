@@ -138,6 +138,7 @@
     <ClInclude Include="bot\botconfig.h" />
     <ClInclude Include="bot\click.h" />
     <ClInclude Include="bot\emulator_control.h" />
+    <ClInclude Include="bot\runner.h" />
     <ClInclude Include="bot\session_controller.h" />
     <ClInclude Include="bot\ui_match.h" />
     <ClInclude Include="bot\ui_templates.h" />
@@ -155,7 +156,6 @@
     <ClInclude Include="spinner\imspinner.h" />
     <ClInclude Include="util\capture.h" />
     <ClInclude Include="util\http_client.h" />
-    <ClInclude Include="util\image_io.h" />
     <ClInclude Include="util\encoding.h" />
     <ClInclude Include="util\session.h" />
     <ClInclude Include="util\windows\window_utils.h" />
@@ -164,6 +164,7 @@
     <ClCompile Include="bot\botconfig.cpp" />
     <ClCompile Include="bot\click.cpp" />
     <ClCompile Include="bot\emulator_control.cpp" />
+    <ClCompile Include="bot\runner.cpp" />
     <ClCompile Include="bot\session_controller.cpp" />
     <ClCompile Include="bot\ui_match.cpp" />
     <ClCompile Include="bot\ui_templates.cpp" />
@@ -178,7 +179,6 @@
     <ClCompile Include="spinner\cimspinner.cpp" />
     <ClCompile Include="util\capture.cpp" />
     <ClCompile Include="util\http_client.cpp" />
-    <ClCompile Include="util\image_io.cpp" />
     <ClCompile Include="util\encoding.cpp" />
     <ClCompile Include="util\session.cpp" />
     <ClCompile Include="util\windows\window_utils.cpp" />
