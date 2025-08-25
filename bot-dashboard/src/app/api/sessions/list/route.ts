@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getRedis } from '@/lib/redis'
 import { kSess, kMatches, kStatus, kLogs } from '@/lib/keys'
 
+const STALE_MS = 15 * 60 * 1000 // set stopped after 15 minutes
+
 export async function GET(req: NextRequest) {
   const r = await getRedis()
   // WARNING: KEYS can be heavy with many sessions — for small debug use it's fine
@@ -11,19 +13,32 @@ export async function GET(req: NextRequest) {
 
   const rows = await Promise.all(
     sessionIds.map(async (id) => {
-      const [sess, matchesStr, status, logLen] = await Promise.all([
+      const [sess, matchesStr, statusFromStore, logLen] = await Promise.all([
         r.hGetAll(kSess(id)),
         r.get(kMatches(id)),
         r.get(kStatus(id)),
         r.lLen(kLogs(id))
       ])
+
       if (!sess || Object.keys(sess).length === 0) return null
+
+      const startAt = Number(sess.startAt) || 0
+      const updatedAt = Number(sess.updatedAt) || 0
+
+      const baseStatus = statusFromStore || (sess.status ?? 'normal')
+      const isStale = updatedAt > 0 && Date.now() - updatedAt > STALE_MS
+      const effectiveStatus = isStale ? 'stopped' : baseStatus
+
+      if (isStale && baseStatus !== 'stopped') {
+        await r.set(kStatus(id), 'stopped')
+      }
+
       return {
         session: id,
-        startAt: Number(sess.startAt),
-        updatedAt: Number(sess.updatedAt),
+        startAt,
+        updatedAt,
         totalMatches: Number(matchesStr || 0),
-        status: status || (sess.status ?? 'normal'),
+        status: effectiveStatus,
         logCount: Number(logLen || 0)
       }
     })

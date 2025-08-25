@@ -6,6 +6,8 @@ import type { LogLine } from '@/lib/types'
 
 export const runtime = 'nodejs'
 
+const STALE_MS = 15 * 60 * 1000 // set stopped after 15 minutes
+
 export async function GET(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const sid = id.trim()
@@ -16,17 +18,27 @@ export async function GET(_: NextRequest, { params }: { params: Promise<{ id: st
     return NextResponse.json({ error: 'not found' }, { status: 404 })
   }
 
-  const totalMatches = Number(await r.get(kMatches(sid))) || 0
-  const status = (await r.get(kStatus(sid))) || (sess.status ?? 'normal')
+  const startAt = Number(sess.startAt) || 0
+  const updatedAt = Number(sess.updatedAt) || 0
 
-  const raw = await r.lRange(kLogs(sid), 0, 99) // newest-first
-  const logs = raw.map((s) => JSON.parse(s) as LogLine).reverse() // newest-last for UI
+  const totalMatches = Number(await r.get(kMatches(sid))) || 0
+  const statusFromStore = (await r.get(kStatus(sid))) || (sess.status ?? 'normal')
+
+  const isStale = updatedAt > 0 && Date.now() - updatedAt > STALE_MS
+  const status = isStale ? 'stopped' : statusFromStore
+
+  if (isStale && statusFromStore !== 'stopped') {
+    await r.set(kStatus(sid), 'stopped')
+  }
+
+  const raw = await r.lRange(kLogs(sid), 0, 99)
+  const logs = raw.map((s) => JSON.parse(s) as LogLine).reverse()
 
   return NextResponse.json(
     {
       session: sid,
-      startAt: Number(sess.startAt),
-      updatedAt: Number(sess.updatedAt),
+      startAt,
+      updatedAt,
       totalMatches,
       status,
       logs

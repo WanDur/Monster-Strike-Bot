@@ -100,7 +100,7 @@ export default function Page() {
                 id="session-code"
                 value={code}
                 onChange={(e) => setCode(e.target.value.slice(0, MAX_LEN))}
-                placeholder="session code"
+                placeholder="session"
                 autoComplete="one-time-code"
                 inputMode="text"
                 className="w-full uppercase text-lg rounded-2xl border border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-950/50 px-4 pr-24 py-3 outline-none ring-offset-2 focus:ring-2 focus:ring-slate-400 dark:focus:ring-slate-600 transition-shadow placeholder:text-slate-400 uppercase"
@@ -110,6 +110,7 @@ export default function Page() {
                     if (code.trim().length === MAX_LEN) go()
                   }
                 }}
+                enterKeyHint="done"
               />
 
               <button
@@ -145,7 +146,7 @@ export default function Page() {
           </form>
 
           <div className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-            Note: The code should be exactly {MAX_LEN} characters long
+            Note: The code is exactly {MAX_LEN} characters long
           </div>
 
           <div
@@ -194,7 +195,7 @@ export default function Page() {
         </div>
       </div>
 
-      <div className="absolute bottom-4 text-sm text-slate-500 dark:text-slate-500">Version: beta</div>
+      <div className="absolute bottom-4 text-xs text-slate-500 dark:text-slate-500 select-none">Version: 1.0</div>
     </main>
   )
 }
